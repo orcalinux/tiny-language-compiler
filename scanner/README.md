@@ -110,14 +110,14 @@ Scanner/
 1. **Clone the Repository**:
 
    ```bash
-   git clone <repository_url>
-   cd Scanner
+   git clone https://github.com/OrcaLinux/Design-of-Compilers
+   cd Design-of-Compilers/scanner
    ```
 
 2. **Compile the Scanner**:
 
    ```bash
-   g++ src/scanner.cpp src/utils.cpp -o scanner
+   g++ src/scanner.cpp src/utils.cpp -Iinclude -o scanner
    ```
 
 3. **Run the Scanner**:

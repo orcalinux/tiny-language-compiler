@@ -34,10 +34,10 @@ x := 4;
 The scanner produces the following output:
 
 ```
-x , Identifier
+x  , Identifier
 := , ASSIGN
-4 , NUMBER
-; , SEMICOLON
+4  , NUMBER
+;  , SEMICOLON
 ```
 
 ## List of Tokens

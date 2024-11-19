@@ -1,51 +1,42 @@
 // Token class implementation
 #include "token.hpp"
 
-std::string Token::toString() const
-{
-    switch (type)
-    {
-    case TokenType::IF:
-        return "IF";
-    case TokenType::THEN:
-        return "THEN";
-    case TokenType::ELSE:
-        return "ELSE";
-    case TokenType::END:
-        return "END";
-    case TokenType::REPEAT:
-        return "REPEAT";
-    case TokenType::UNTIL:
-        return "UNTIL";
-    case TokenType::READ:
-        return "READ";
-    case TokenType::WRITE:
-        return "WRITE";
-    case TokenType::ASSIGN:
-        return "ASSIGN";
-    case TokenType::LESSTHAN:
-        return "LESSTHAN";
-    case TokenType::EQUAL:
-        return "EQUAL";
-    case TokenType::PLUS:
-        return "PLUS";
-    case TokenType::MINUS:
-        return "MINUS";
-    case TokenType::MULT:
-        return "MULT";
-    case TokenType::DIV:
-        return "DIV";
-    case TokenType::OPENBRACKET:
-        return "OPENBRACKET";
-    case TokenType::CLOSEDBRACKET:
-        return "CLOSEDBRACKET";
-    case TokenType::SEMICOLON:
-        return "SEMICOLON";
-    case TokenType::IDENTIFIER:
-        return "IDENTIFIER";
-    case TokenType::NUMBER:
-        return "NUMBER";
-    default:
-        return "UNKNOWN";
+Token::Token(TokenType type, std::string_view value, int line, int column)
+    : type(type),
+      value(value),
+      line(line),
+      column(column) {}
+
+TokenType Token::getType() const {
+    return this->type;
+}
+
+std::string Token::getValue() const {
+    return this->value;
+}
+
+int Token::getLine() const {
+    return this->line;
+}
+
+int Token::getColumn() const {
+    return this->column;
+}
+
+std::string Token::toString(bool includePosition) const {
+    std::string result = this->getValue() + ", " + this->getTokenTypeString().data();
+    if (includePosition) {
+        result += " (Line: " + std::to_string(this->line) + ", Column: " + std::to_string(this->column) + ")";
     }
+    return result;
+}
+
+std::string_view Token::getTokenTypeString() const {
+    size_t index = static_cast<size_t>(this->type);
+
+    if (index >= tokenTypeStrings.size()) {
+        throw std::out_of_range("Invalid token type");
+    }
+
+    return tokenTypeStrings[index];
 }

@@ -1,1 +1,1 @@
-// Main scanner implementation in C++
+// Lexer class implementation

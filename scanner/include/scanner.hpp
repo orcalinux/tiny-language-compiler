@@ -1,32 +1,72 @@
 /**
- * @file scanner.hpp
- * @brief Provides the Scanner class for orchestrating the tokenization process.
+ * @file Scanner.hpp
+ * @brief Defines the Scanner class for tokenizing TINY language source code.
  *
- * The Scanner handles file I/O and interacts with the Lexer to tokenize the input.
+ * The Scanner is responsible for reading the source code, identifying tokens,
+ * and handling special cases such as comments and invalid characters.
  */
 
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef Scanner_HPP
+#define Scanner_HPP
 
+#include <vector>
 #include <string>
+#include "token.hpp"
 
 /**
  * @class Scanner
- * @brief Manages the scanning process for TINY language source code.
+ * @brief Performs lexical analysis on TINY language source code.
  *
- * The Scanner reads input files, tokenizes their content using the Lexer,
- * and writes the tokens to an output file.
+ * The Scanner processes input source code to produce a sequence of tokens.
  */
 class Scanner
 {
 public:
     /**
-     * @brief Runs the scanner with the specified input and output files.
+     * @brief Constructs a Scanner object with the given input string.
      *
-     * @param inputFile Path to the input file containing TINY source code.
-     * @param outputFile Path to the output file where tokens will be written.
+     * @param input The source code to be tokenized.
      */
-    static void run(const std::string &inputFile, const std::string &outputFile);
+    Scanner(const std::string &input);
+
+    /**
+     * @brief Tokenizes the input source code.
+     *
+     * @return A vector of tokens produced from the source code.
+     */
+    std::vector<Token> tokenize();
+
+private:
+    std::string input; /**< The source code to be tokenized */
+    size_t pos = 0;    /**< Current position in the input string */
+    int line = 1;      /**< Current line number */
+    int column = 1;    /**< Current column number */
+
+    /**
+     * @brief Peeks at the next character in the input without advancing the position.
+     *
+     * @return The next character.
+     */
+    char peek() const;
+
+    /**
+     * @brief Gets the next character in the input and advances the position.
+     *
+     * @return The next character.
+     */
+    char get();
+
+    /**
+     * @brief Skips over whitespace characters in the input.
+     */
+    void skipWhitespace();
+
+    /**
+     * @brief Extracts the next token from the input.
+     *
+     * @return The next token.
+     */
+    Token getToken();
 };
 
-#endif // SCANNER_HPP
+#endif // Scanner_HPP

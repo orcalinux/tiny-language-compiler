@@ -3,14 +3,15 @@
  * @brief Defines the Scanner class for tokenizing TINY language source code.
  *
  * The Scanner is responsible for reading the source code, identifying tokens,
- * and handling special cases such as comments and invalid characters.
+ * and handling special cases such as invalid characters.
  */
 
 #ifndef Scanner_HPP
 #define Scanner_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
+
 #include "token.hpp"
 
 /**
@@ -19,9 +20,8 @@
  *
  * The Scanner processes input source code to produce a sequence of tokens.
  */
-class Scanner
-{
-public:
+class Scanner {
+   public:
     /**
      * @brief Constructs a Scanner object with the given input string.
      *
@@ -30,13 +30,20 @@ public:
     Scanner(const std::string &input);
 
     /**
-     * @brief Tokenizes the input source code.
+     * @brief Extracts the next token from the input.
      *
-     * @return A vector of tokens produced from the source code.
+     * @return The next token.
      */
-    std::vector<Token> tokenize();
+    Token getNextToken();
 
-private:
+    /**
+     * @brief Checks if there are more tokens to be extracted.
+     *
+     * @return True if there are more tokens, false otherwise.
+     */
+    bool hasMoreTokens() const;
+
+   private:
     std::string input; /**< The source code to be tokenized */
     size_t pos = 0;    /**< Current position in the input string */
     int line = 1;      /**< Current line number */
@@ -60,13 +67,6 @@ private:
      * @brief Skips over whitespace characters in the input.
      */
     void skipWhitespace();
-
-    /**
-     * @brief Extracts the next token from the input.
-     *
-     * @return The next token.
-     */
-    Token getToken();
 };
 
-#endif // Scanner_HPP
+#endif  // Scanner_HPP

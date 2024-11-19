@@ -10,12 +10,11 @@ App::App(int argc, char* argv[]) {
 
 void App::run() {
     if (showHelp) {
-        printHelp();
         return;
     }
 
     // If neither output file nor showOutput is specified, save to default output file
-    if (!hasOutputFile && !showOutput) {
+    if ((!hasOutputFile && !showOutput)) {
         hasOutputFile = true;
         outputFilePath = "output.txt";
     }
@@ -81,6 +80,20 @@ void App::processTokens(std::string& inputFileContent) {
     if (!hasOutputFile) {
         // FileHandler::writeTokens(outputFilePath, tokens, includeTokenPosition);
     }
+
+    // print all data
+    std::cout << "Processing\n";
+    std::cout << "Input file content:\n"
+              << inputFileContent << std::endl;
+
+    // print all member variables
+    std::cout << "inputFilePath: " << inputFilePath << std::endl;
+    std::cout << "outputFilePath: " << outputFilePath << std::endl;
+    std::cout << "hasOutputFile: " << hasOutputFile << std::endl;
+    std::cout << "interactiveMode: " << interactiveMode << std::endl;
+    std::cout << "showOutput: " << showOutput << std::endl;
+    std::cout << "includeTokenPosition: " << includeTokenPosition << std::endl;
+    std::cout << "terminateKeyword: " << terminateKeyword << std::endl;
 }
 
 void App::printTokens(const std::vector<Token>& tokens, bool includePosition) {
@@ -131,7 +144,7 @@ void App::parseArgs(int argc, char* argv[]) {
     while ((c = getopt_long(argc, argv, "hi:o:m:t:s", long_options, &option_index)) != -1) {
         switch (c) {
             case 0:
-                if (long_options[option_index].flag == 0) {
+                if (long_options[option_index].flag != 0) {
                     break;
                 }
 
@@ -139,7 +152,7 @@ void App::parseArgs(int argc, char* argv[]) {
                     includeTokenPosition = true;
                 } else if (std::string(long_options[option_index].name) == "default-output") {
                     outputFilePath = "output.txt";
-                    hasOutputFile = false;
+                    hasOutputFile = true;
                 }
                 break;
 
@@ -153,8 +166,8 @@ void App::parseArgs(int argc, char* argv[]) {
                 break;
 
             case 'o':
-                outputFilePath = optarg;
-                hasOutputFile = false;
+                outputFilePath = std::string(optarg);
+                hasOutputFile = true;
                 break;
 
             case 'm':
@@ -199,14 +212,15 @@ void App::handlePositionalArgs(int argc, char* argv[]) {
     // assign positional arguments to input and output file paths
     if (inputFilePath.empty() && !positionalArgs.empty()) {
         inputFilePath = positionalArgs[0];
-        if (outputFilePath.empty() && positionalArgs.size() > 1) {
+        if (outputFilePath.empty() && positionalArgs.size() >= 1) {
             outputFilePath = positionalArgs[1];
-            hasOutputFile = false;  // output file is specified
+            hasOutputFile = true;  // output file is specified
         }
     }
 
     // if no output file is specified and default output is enabled, set output file to "output.txt"
-    if (outputFilePath.empty() && !hasOutputFile) {
+    if (outputFilePath.empty() && !hasOutputFile && !showOutput) {
         outputFilePath = "output.txt";
+        hasOutputFile = true;
     }
 }

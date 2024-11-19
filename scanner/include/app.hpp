@@ -72,7 +72,7 @@ class App {
     std::string outputFilePath;           /**< Path to the output file */
     bool interactiveMode = false;         /**< Flag to run the application in interactive mode */
     std::string terminateKeyword = "END"; /**< Keyword to terminate interactive mode */
-    bool hasOutputFile = true;            /**< Flag to indicate if an output file is specified */
+    bool hasOutputFile = false;           /**< Flag to indicate if an output file is specified */
 
     /**
      * @brief Runs the application in interactive mode.

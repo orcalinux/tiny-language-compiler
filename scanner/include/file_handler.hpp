@@ -9,16 +9,21 @@
 #ifndef FILE_HANDLER_HPP
 #define FILE_HANDLER_HPP
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "token.hpp"
 
 /**
  * @class FileHandler
  * @brief Provides utility functions for file input and output.
  */
-class FileHandler
-{
-public:
+class FileHandler {
+   public:
     /**
      * @brief Reads the entire content of a file into a string.
      *
@@ -35,7 +40,16 @@ public:
      * @param lines A vector of strings to write to the file.
      * @throws std::runtime_error if the file cannot be opened.
      */
-    static void writeFile(const std::string &filePath, const std::vector<std::string> &lines);
+    static void writeTokens(const std::string &filePath, const std::vector<Token> &tokens, bool includePosition = false);
+
+    /**
+     * @brief Writes a string to a file.
+     *
+     * @param filePath Path to the file to be written.
+     * @param content A string to write to the file.
+     * @throws std::runtime_error if the file cannot be opened.
+     */
+    static void writeFile(const std::string &filePath, const std::string &content);
 };
 
-#endif // FILE_HANDLER_HPP
+#endif  // FILE_HANDLER_HPP

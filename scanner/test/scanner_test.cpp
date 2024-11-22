@@ -41,24 +41,29 @@ namespace TINY
             Scanner scanner(input);
 
             // First identifier: "varName"
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::IDENTIFIER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "varName");
+            Token token1 = scanner.getNextToken(); // Store the token
+            EXPECT_EQ(token1.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token1.getValue(), "varName");
 
             // Identifier: "another"
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::IDENTIFIER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "another");
+            Token token2 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "another");
 
             // Underscore as UNKNOWN token
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::UNKNOWN);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "_");
+            Token token3 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token3.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token3.getValue(), "_");
 
             // Identifier: "var"
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::IDENTIFIER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "var");
+            Token token4 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token4.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token4.getValue(), "var");
 
             // Final identifier: "lastVar"
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::IDENTIFIER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "lastVar");
+            Token token5 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token5.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token5.getValue(), "lastVar");
         }
 
         // Test numeric literals
@@ -67,14 +72,20 @@ namespace TINY
             std::string input = "123 45678 999";
             Scanner scanner(input);
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::NUMBER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "123");
+            // First number: "123"
+            Token token1 = scanner.getNextToken(); // Store the token
+            EXPECT_EQ(token1.getType(), TokenType::NUMBER);
+            EXPECT_EQ(token1.getValue(), "123");
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::NUMBER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "45678");
+            // Second number: "45678"
+            Token token2 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token2.getType(), TokenType::NUMBER);
+            EXPECT_EQ(token2.getValue(), "45678");
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::NUMBER);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "999");
+            // Third number: "999"
+            Token token3 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token3.getType(), TokenType::NUMBER);
+            EXPECT_EQ(token3.getValue(), "999");
         }
 
         // Test mixed tokens
@@ -95,17 +106,28 @@ namespace TINY
         // Test unknown tokens
         TEST(ScannerTest, UnknownTokens)
         {
-            std::string input = "@ $ #";
+            std::string input = "@ _ $ #";
             Scanner scanner(input);
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::UNKNOWN);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "@");
+            // First unknown token: "@"
+            Token token1 = scanner.getNextToken(); // Store the token
+            EXPECT_EQ(token1.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token1.getValue(), "@");
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::UNKNOWN);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "$");
+            // Second unknown token: "_"
+            Token token2 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token2.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token2.getValue(), "_");
 
-            EXPECT_EQ(scanner.getNextToken().getType(), TokenType::UNKNOWN);
-            EXPECT_EQ(scanner.getNextToken().getValue(), "#");
+            // Second unknown token: "$"
+            Token token3 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token3.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token3.getValue(), "$");
+
+            // Third unknown token: "#"
+            Token token4 = scanner.getNextToken(); // Store the next token
+            EXPECT_EQ(token4.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token4.getValue(), "#");
         }
 
     } // namespace SCANNER

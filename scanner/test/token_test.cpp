@@ -22,8 +22,8 @@ namespace TINY
         {
             Token token(TokenType::IF, "if", 1, 1);
 
-            EXPECT_EQ(token.toString(false), "IF, if");
-            EXPECT_EQ(token.toString(true), "IF, if [Line: 1, Column: 1]");
+            EXPECT_EQ(token.toString(false), "if, IF");
+            EXPECT_EQ(token.toString(true), "if, IF [Line: 1, Column: 1]");
         }
 
     } // namespace SCANNER

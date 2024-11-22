@@ -95,6 +95,14 @@ void App::processTokens(std::string &inputFileContent) {
     tokenStreamBuilder.build();
     std::vector<Token> tokens = tokenStreamBuilder.getTokens();
 
+    // if no tokens are generated, throw an exception
+    if (tokens.empty()) {
+        throw std::runtime_error("No tokens generated. Please check the input file.");
+    }
+
+    // any unknown tokens printed as errors to the console
+    catchUnkonwnTokens(tokens);
+
     // write tokens to output file if specified
     if (hasOutputFile) {
         // set color to orange
@@ -110,6 +118,31 @@ void App::processTokens(std::string &inputFileContent) {
     if (showOutput) {
         printTokens(tokens, includeTokenPosition);
     }
+}
+
+void App::catchUnkonwnTokens(std::vector<TINY::SCANNER::Token> &tokens) {
+    bool hasUnknownTokens = false;
+    for (const Token &token : tokens) {
+        if (token.getType() == TokenType::UNKNOWN) {
+            // for the first unknown token, set color to red
+            if (!hasUnknownTokens) {
+                hasUnknownTokens = true;
+                // set color to red
+                std::cout << "\033[1;31m";
+                std::cerr << "The input contains unexpected tokens, please check the input file."
+                          << std::endl
+                          << "List of unexpected tokens:"
+                          << std::endl;
+            }
+
+            std::cerr << "-\tError: unexpected token '" << token.getValue()
+                      << "' at line " << token.getLine()
+                      << ", column " << token.getColumn()
+                      << std::endl;
+        }
+    }
+    // reset color
+    std::cout << "\033[0m";
 }
 
 void App::printTokens(const std::vector<Token> &tokens, bool includePosition) {

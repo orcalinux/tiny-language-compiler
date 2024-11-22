@@ -106,7 +106,7 @@ namespace TINY
         // Test unknown tokens
         TEST(ScannerTest, UnknownTokens)
         {
-            std::string input = "@ _ $ #";
+            std::string input = "@_ $ #";
             Scanner scanner(input);
 
             // First unknown token: "@"

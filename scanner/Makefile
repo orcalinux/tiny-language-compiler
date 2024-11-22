@@ -53,13 +53,14 @@ test: $(TEST_OBJS) | $(BUILD_DIR)
 	@echo "TEST_FILE is $(TEST_FILE)"
 	@if [ -z "$(TEST_FILE)" ]; then \
 		echo "Error: Please specify a test file using TEST_FILE=<test_file>"; \
-		echo "Example: make test TEST_FILE=token_test"; \
+		echo "Example: make test TEST_FILE=token"; \
 		exit 1; \
 	else \
-		echo "Compiling $(TEST_DIR)/$(TEST_FILE).cpp"; \
+		echo "Compiling $(TEST_DIR)/$(TEST_FILE)_test.cpp"; \
 		$(CXX) $(CXXFLAGS) -I$(GTEST_DIR) -L$(GTEST_LIB_DIR) \
-		$(TEST_DIR)/$(TEST_FILE).cpp $(TEST_OBJS) -lgtest -lgtest_main -pthread \
+		$(TEST_DIR)/$(TEST_FILE)_test.cpp $(TEST_OBJS) -lgtest -lgtest_main -pthread \
 		-o $(BUILD_DIR)/$(TEST_FILE)_test && ./$(BUILD_DIR)/$(TEST_FILE)_test; \
 	fi
+
 
 .PHONY: all clean run test

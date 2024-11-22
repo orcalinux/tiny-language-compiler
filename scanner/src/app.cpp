@@ -14,274 +14,252 @@
 
 #include "app.hpp"
 
-namespace TINY
-{
-    /**
-     * @namespace SCANNER
-     * @brief Contains all components related to the lexical analysis (scanning) of TINY language.
-     */
-    namespace SCANNER
-    {
+namespace TINY {
+/**
+ * @namespace SCANNER
+ * @brief Contains all components related to the lexical analysis (scanning) of TINY language.
+ */
+namespace SCANNER {
 
-        App::App(int argc, char *argv[])
-        {
-            parseArgs(argc, argv);
+App::App(int argc, char *argv[]) {
+    parseArgs(argc, argv);
+}
 
-            if (inputFilePath.empty() && !interactiveMode && !showHelp)
-            {
-                throw std::invalid_argument("Input file not specified");
-            }
+void App::run() {
+    if (showHelp) {
+        return;
+    }
+
+    if (interactiveMode) {
+        runInteractiveMode();
+    } else {
+        runFileMode();
+    }
+}
+
+void App::runInteractiveMode() {
+    // while loop to read input from user until terminateKeyword is entered
+    std::string input;
+    std::string inputContent;
+    // set color to green
+    std::cout << "\033[1;32m";
+    std::cout << "Enter TINY code (type '" << terminateKeyword << "' to finish):\n";
+    // reset color
+    std::cout << "\033[0m";
+
+    while (true) {
+        std::getline(std::cin, input);
+
+        if (input == terminateKeyword) {
+            // set color to light green
+            std::cout << "\033[1;92m";
+            std::cout << "\nTerminating interactive mode...\n\n";
+            // reset color
+            std::cout << "\033[0m";
+            break;
         }
 
-        void App::run()
-        {
-            if (showHelp)
-            {
-                return;
-            }
+        inputContent += input + "\n";
+    }
 
-            // If neither output file nor showOutput is specified, save to default output file
-            if ((!hasOutputFile && !showOutput))
-            {
+    processTokens(inputContent);
+}
+
+void App::runFileMode() {
+    // read input file
+    // set color to orange
+    std::cout << "\033[1;33m";
+    std::cout << "Reading input file: " << inputFilePath << std::endl;
+    // reset color
+    std::cout << "\033[0m";
+
+    std::string inputFileContent = FileHandler::readFile(inputFilePath);
+
+    processTokens(inputFileContent);
+}
+
+void App::processTokens(std::string &inputFileContent) {
+    // Empty input file content
+    if (inputFileContent.empty()) {
+        throw std::invalid_argument("Input file is empty");
+        return;
+    }
+
+    // initialize scanner
+    Scanner scanner(inputFileContent);
+
+    // initialize tokenStreamBuilder
+    TokenStreamBuilder tokenStreamBuilder(scanner);
+
+    // build token stream
+    tokenStreamBuilder.build();
+    std::vector<Token> tokens = tokenStreamBuilder.getTokens();
+
+    // write tokens to output file if specified
+    if (hasOutputFile) {
+        // set color to orange
+        std::cout << "\033[1;33m";
+        std::cout << "Writing to file: " << outputFilePath << std::endl;
+        // reset color
+        std::cout << "\033[0m";
+
+        FileHandler::writeTokens(outputFilePath, tokens, includeTokenPosition);
+    }
+
+    // if showOutput is true, print tokens to console
+    if (showOutput) {
+        printTokens(tokens, includeTokenPosition);
+    }
+}
+
+void App::printTokens(const std::vector<Token> &tokens, bool includePosition) {
+    // set color to Green
+    std::cout << "\033[1;32m";
+    std::cout << "----------------------------Tokens:----------------------------\n";
+    // reset color
+    std::cout << "\033[0m";
+
+    for (const Token &token : tokens) {
+        std::cout << token.toString(includePosition) << std::endl;
+    }
+}
+
+void App::printHelp() {
+    std::cout << "Usage: scanner [options] [input_file [output_file]]\n"
+              << "Options:\n"
+              << "  -h, --help                      Show this help message\n"
+              << "  -i, --input <file>              Specify the input file\n"
+              << "  -o, --output <file>             Specify the output file\n"
+              << "  -m, --mode <mode>               Specify the mode (file, interactive)\n"
+              << "  -s, --show-output               Display output in the console\n"
+              << "  -p, --include-token-position    Include token position in output\n"
+              << "  -t, --terminate-keyword <kw>    Termination keyword for interactive mode\n"
+              << "  -d, --default-output            Save to a default output file if not specified\n"
+              << "\n"
+              << "Examples:\n"
+              << "  scanner input.txt output.txt\n"
+              << "  scanner -i input.txt -o output.txt --show-output\n"
+              << "  scanner --mode interactive\n"
+              << "  scanner input.txt --show-output\n";
+}
+
+void App::parseArgs(int argc, char *argv[]) {
+    // struct for long options
+    static struct option long_options[] = {
+        {"help", no_argument, 0, 'h'},
+        {"input", required_argument, 0, 'i'},
+        {"output", required_argument, 0, 'o'},
+        {"mode", required_argument, 0, 'm'},
+        {"show-output", no_argument, 0, 's'},
+        {"include-token-position", no_argument, 0, 'p'},
+        {"terminate-keyword", required_argument, 0, 't'},
+        {"default-output", no_argument, 0, 'd'},
+        {0, 0, 0, 0}  // Terminate the option array
+    };
+
+    int option_index = 0;
+    int c;
+
+    // parse options
+    while ((c = getopt_long(argc, argv, "hi:o:m:t:spd", long_options, &option_index)) != -1) {
+        switch (c) {
+            case 'h':
+                showHelp = true;
+                printHelp();
+                break;
+
+            case 'i':
+                inputFilePath = optarg;
+                break;
+
+            case 'o':
+                outputFilePath = std::string(optarg);
                 hasOutputFile = true;
-                outputFilePath = "output.txt";
-            }
+                break;
 
-            if (interactiveMode)
-            {
-                runInteractiveMode();
-            }
-            else
-            {
-                runFileMode();
-            }
-        }
-
-        void App::runInteractiveMode()
-        {
-            // while loop to read input from user until terminateKeyword is entered
-            std::string input;
-            std::string inputContent;
-
-            while (true)
-            {
-                std::cout << "Enter TINY code (type '" << terminateKeyword << "' to finish):\n";
-                std::getline(std::cin, input);
-
-                if (input == terminateKeyword)
-                {
-                    break;
+            case 'm':
+                if (std::string(optarg) == "interactive" || std::string(optarg) == "i") {
+                    interactiveMode = true;
+                } else if (std::string(optarg) == "file" || std::string(optarg) == "f") {
+                    interactiveMode = false;
+                } else {
+                    throw std::invalid_argument(
+                        std::string("Invalid mode specified. Use 'interactive', 'i' or 'file', 'f' as the mode.") + std::string(" Use -h or --help for usage information."));
                 }
+                break;
 
-                inputContent += input + "\n";
-            }
+            case 't':
+                terminateKeyword = std::string(optarg);
+                break;
 
-            processTokens(inputContent);
-        }
+            case 's':
+                showOutput = true;
+                break;
 
-        void App::runFileMode()
-        {
-            // read input file
-            std::string inputFileContent = FileHandler::readFile(inputFilePath);
+            case 'p':
+                includeTokenPosition = true;
+                break;
 
-            processTokens(inputFileContent);
-        }
-
-        void App::processTokens(std::string &inputFileContent)
-        {
-            // Empty input file content
-            if (inputFileContent.empty())
-            {
-                throw std::invalid_argument("Input file is empty");
-                return;
-            }
-
-            // TODO: Uncomment the following code after implementing the Scanner and TokenStreamBuilder classes
-
-            // initialize scanner
-            // Scanner scanner(inputFileContent);
-
-            // initialize tokenStreamBuilder
-            // TokenStreamBuilder tokenStreamBuilder(scanner);
-
-            // build token stream
-            // tokenStreamBuilder.build();
-            // std::vector<Token> tokens = tokenStreamBuilder.getTokens();
-
-            // if showOutput is true, print tokens to console
-            if (showOutput)
-            {
-                // printTokens(tokens, includeTokenPosition);
-            }
-
-            // write tokens to output file if specified
-            if (!hasOutputFile)
-            {
-                // FileHandler::writeTokens(outputFilePath, tokens, includeTokenPosition);
-            }
-
-            // print all data
-            std::cout << "Processing\n";
-            std::cout << "Input file content:\n"
-                      << inputFileContent << std::endl;
-
-            // print all member variables
-            std::cout << "inputFilePath: " << inputFilePath << std::endl;
-            std::cout << "outputFilePath: " << outputFilePath << std::endl;
-            std::cout << "hasOutputFile: " << hasOutputFile << std::endl;
-            std::cout << "interactiveMode: " << interactiveMode << std::endl;
-            std::cout << "showOutput: " << showOutput << std::endl;
-            std::cout << "includeTokenPosition: " << includeTokenPosition << std::endl;
-            std::cout << "terminateKeyword: " << terminateKeyword << std::endl;
-        }
-
-        void App::printTokens(const std::vector<Token> &tokens, bool includePosition)
-        {
-            std::cout << "Tokens:\n";
-
-            for (const Token &token : tokens)
-            {
-                std::cout << token.toString(includePosition) << std::endl;
-            }
-        }
-
-        void App::printHelp()
-        {
-            std::cout << "Usage: scanner [options] [input_file [output_file]]\n"
-                      << "Options:\n"
-                      << "  -h, --help                      Show this help message\n"
-                      << "  -i, --input <file>              Specify the input file\n"
-                      << "  -o, --output <file>             Specify the output file\n"
-                      << "  -m, --mode <mode>               Specify the mode (file, interactive)\n"
-                      << "  -s, --show-output               Display output in the console\n"
-                      << "      --include-token-position    Include token position in output\n"
-                      << "  -t, --terminate-keyword <kw>    Termination keyword for interactive mode\n"
-                      << "      --default-output            Save to a default output file if not specified\n"
-                      << "\n"
-                      << "Examples:\n"
-                      << "  scanner input.txt output.txt\n"
-                      << "  scanner -i input.txt -o output.txt --show-output\n"
-                      << "  scanner --mode interactive\n"
-                      << "  scanner input.txt --show-output\n";
-        }
-
-        void App::parseArgs(int argc, char *argv[])
-        {
-            // struct for long options
-            static struct option long_options[] = {
-                {"help", no_argument, 0, 'h'},
-                {"input", required_argument, 0, 'i'},
-                {"output", required_argument, 0, 'o'},
-                {"mode", required_argument, 0, 'm'},
-                {"show-output", no_argument, 0, 's'},
-                {"include-token-position", no_argument, 0, 0},
-                {"terminate-keyword", required_argument, 0, 't'},
-                {"default-output", no_argument, 0, 0},
-                {0, 0, 0, 0} // Terminate the option array
-            };
-
-            int option_index = 0;
-            int c;
-
-            // parse options
-            while ((c = getopt_long(argc, argv, "hi:o:m:t:s", long_options, &option_index)) != -1)
-            {
-                switch (c)
-                {
-                case 0:
-                    if (long_options[option_index].flag != 0)
-                    {
-                        break;
-                    }
-
-                    if (std::string(long_options[option_index].name) == "include-token-position")
-                    {
-                        includeTokenPosition = true;
-                    }
-                    else if (std::string(long_options[option_index].name) == "default-output")
-                    {
-                        outputFilePath = "output.txt";
-                        hasOutputFile = true;
-                    }
-                    break;
-
-                case 'h':
-                    showHelp = true;
-                    printHelp();
-                    break;
-
-                case 'i':
-                    inputFilePath = optarg;
-                    break;
-
-                case 'o':
-                    outputFilePath = std::string(optarg);
-                    hasOutputFile = true;
-                    break;
-
-                case 'm':
-                    if (std::string(optarg) == "interactive")
-                    {
-                        interactiveMode = true;
-                    }
-                    else if (std::string(optarg) == "file")
-                    {
-                        interactiveMode = false;
-                    }
-                    else
-                    {
-                        throw std::invalid_argument("Invalid mode specified. Use 'interactive' or 'file' as the mode.");
-                    }
-
-                    break;
-
-                case 't':
-                    terminateKeyword = optarg;
-                    break;
-
-                case 's':
-                    showOutput = true;
-                    break;
-
-                case '?':
-                    throw std::invalid_argument("Invalid option specified, use -h or --help for usage information.");
-                    break;
-
-                default:
-                    break;
-                }
-            }
-
-            handlePositionalArgs(argc, argv);
-        }
-
-        void App::handlePositionalArgs(int argc, char *argv[])
-        {
-            std::vector<std::string> positionalArgs;
-
-            // get positional arguments
-            while (optind < argc)
-            {
-                positionalArgs.push_back(argv[optind++]);
-            }
-
-            // assign positional arguments to input and output file paths
-            if (inputFilePath.empty() && !positionalArgs.empty())
-            {
-                inputFilePath = positionalArgs[0];
-                if (outputFilePath.empty() && positionalArgs.size() >= 1)
-                {
-                    outputFilePath = positionalArgs[1];
-                    hasOutputFile = true; // output file is specified
-                }
-            }
-
-            // if no output file is specified and default output is enabled, set output file to "output.txt"
-            if (outputFilePath.empty() && !hasOutputFile && !showOutput)
-            {
-                outputFilePath = "output.txt";
+            case 'd':
+                outputFilePath = DEFAULT_OUTPUT_FILE;
                 hasOutputFile = true;
-            }
+                break;
+
+            case '?':
+                throw std::invalid_argument("Invalid option specified, use -h or --help for usage information.");
+                break;
+
+            default:
+                break;
         }
-    } // namespace SCANNER
-} // namespace TINY
+    }
+
+    handlePositionalArgs(argc, argv);
+    defaultActions();
+}
+
+void App::handlePositionalArgs(int argc, char *argv[]) {
+    std::vector<std::string> positionalArgs;
+
+    // get positional arguments
+    while (optind < argc) {
+        positionalArgs.push_back(argv[optind++]);
+    }
+
+    // assign positional arguments to input and output file paths
+
+    if (inputFilePath.empty() && !positionalArgs.empty()) {
+        inputFilePath = std::string(positionalArgs[0]);
+
+        if (outputFilePath.empty() && positionalArgs.size() > 1) {
+            outputFilePath = positionalArgs[1];
+            hasOutputFile = true;  // output file is specified
+        }
+    }
+}
+
+void App::defaultActions() {
+    // if no input file specified, and not in interactive mode, and not showing help, throw an exception
+    if (inputFilePath.empty() && !interactiveMode && !showHelp) {
+        throw std::invalid_argument("Invalid calling arguments. Use -h or --help for usage information.");
+    }
+
+    // if interactive mode is enabled, and no input or output files, and no shown output, set showOutput to true
+    if (interactiveMode && inputFilePath.empty() && !hasOutputFile && !showOutput) {
+        showOutput = true;
+    }
+
+    // if file mode is enabled, and no input file is specified, throw an exception
+    if (!interactiveMode && inputFilePath.empty()) {
+        throw std::invalid_argument("Input file not specified, use -h or --help for usage information.");
+    }
+
+    // if file mode, and input file is specified, and no output file is specified, and no show output,
+    // set output file to default output file and mark that output file is specified
+    if (!interactiveMode && !inputFilePath.empty() && !hasOutputFile && !showOutput) {
+        outputFilePath = DEFAULT_OUTPUT_FILE;
+        hasOutputFile = true;
+    }
+}
+}  // namespace SCANNER
+}  // namespace TINY

@@ -72,14 +72,11 @@ namespace TINY
         {
             std::ostringstream oss;
 
-            // Add the token type as a string
-            oss << getTokenTypeString();
+            // Add the token's value as the "Token String"
+            oss << value;
 
-            // Include the token's value, if it exists
-            if (!value.empty())
-            {
-                oss << " (" << value << ")";
-            }
+            // Add the token type after the token string, separated by a comma
+            oss << ", " << getTokenTypeString();
 
             // Optionally include the token's line and column positions
             if (includePosition)
@@ -90,5 +87,6 @@ namespace TINY
             // Return the final string representation
             return oss.str();
         }
+
     } // namespace SCANNER
 } // namespace TINY

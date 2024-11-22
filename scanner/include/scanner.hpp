@@ -105,13 +105,16 @@ namespace TINY
             void skipWhitespace();
 
             /**
-             * @brief Skips over comments in the input source code.
+             * @brief Skips over nested comments in the input source code.
              *
              * This method checks if the current position is at the start of a comment (indicated by a '{' character).
              * If it is, the method skips over all characters until it finds the corresponding closing '}'.
+             * It correctly handles **nested comments** by keeping track of the nesting levels.
+             * For each opening '{', it increases the nesting level, and for each closing '}', it decreases the nesting level.
+             * The comment is considered closed when the nesting level returns to zero.
              * After successfully skipping a comment, it also skips any whitespace characters that follow the comment.
-             * If the end of the input is reached before finding a closing '}', the method returns `true` to indicate
-             * that an unclosed comment was detected.
+             * If the end of the input is reached before all comments are closed (i.e., nesting level does not return to zero),
+             * the method returns `true` to indicate that an unclosed comment was detected.
              *
              * @return True if an unclosed comment was detected, false otherwise.
              */

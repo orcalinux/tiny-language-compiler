@@ -25,6 +25,5 @@ namespace TINY
             EXPECT_EQ(token.toString(false), "if, IF");
             EXPECT_EQ(token.toString(true), "if, IF [Line: 1, Column: 1]");
         }
-
     } // namespace SCANNER
 } // namespace TINY

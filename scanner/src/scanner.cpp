@@ -10,6 +10,7 @@
 #include "scanner.hpp"
 #include <cctype>    // For character classification functions
 #include <stdexcept> // For exception handling (if needed)
+#include <stack>
 
 namespace TINY
 {
@@ -184,23 +185,39 @@ namespace TINY
         {
             if (pos < input.size() && peek() == '{')
             {
-                get(); // Consume '{'
-                while (pos < input.size() && peek() != '}')
+                get(); // Consume initial '{'
+                std::stack<char> commentStack;
+                commentStack.push('{'); // Push the initial '{' onto the stack
+
+                while (pos < input.size())
                 {
-                    get(); // Consume characters inside the comment
+                    char currentChar = get();
+
+                    if (currentChar == '{')
+                    {
+                        commentStack.push('{'); // Push nested '{' onto the stack
+                    }
+                    else if (currentChar == '}')
+                    {
+                        commentStack.pop(); // Pop a '{' from the stack
+
+                        if (commentStack.empty())
+                        {
+                            // All comments are closed
+                            skipWhitespace(); // Skip whitespace after comment
+                            return false;     // Comment was successfully skipped
+                        }
+                    }
+                    else if (currentChar == '\0')
+                    {
+                        // End of input reached unexpectedly
+                        return true; // Unclosed comment detected
+                    }
+                    // Continue consuming characters inside the comment
                 }
-                if (pos < input.size())
-                {
-                    get();            // Consume '}'
-                    skipWhitespace(); // Skip any whitespace after the comment
-                    return false;     // Comment was successfully skipped
-                }
-                else
-                {
-                    // EOF reached before closing '}'
-                    // Unclosed comment detected
-                    return true;
-                }
+
+                // EOF reached before all comments were closed
+                return true; // Unclosed comment detected
             }
             return false; // No comment to skip
         }

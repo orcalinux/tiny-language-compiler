@@ -294,5 +294,78 @@ namespace TINY
             EXPECT_FALSE(scanner.hasMoreTokens());
         }
 
+        // New test case: Nested comments
+        TEST(ScannerTest, NestedComments)
+        {
+            // Input with nested comments
+            std::string input = "read x; { This is a { nested { comment } } } write y;";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+
+            // Nested comments are skipped, no tokens generated for them
+
+            // Token: write
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::WRITE);
+            EXPECT_EQ(token4.getValue(), "write");
+
+            // Token: y
+            Token token5 = scanner.getNextToken();
+            EXPECT_EQ(token5.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token5.getValue(), "y");
+
+            // Token: ;
+            Token token6 = scanner.getNextToken();
+            EXPECT_EQ(token6.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token6.getValue(), ";");
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
+        }
+
+        // New test case: Unclosed nested comment
+        TEST(ScannerTest, UnclosedNestedComment)
+        {
+            // Input with an unclosed nested comment
+            std::string input = "read x; { Outer comment { Inner comment } write y;";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+
+            // Attempt to get next token, should return UNKNOWN due to unclosed comment
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token4.getValue(), "Unclosed comment");
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
+        }
     } // namespace SCANNER
 } // namespace TINY

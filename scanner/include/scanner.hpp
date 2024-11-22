@@ -6,8 +6,8 @@
  * and handling special cases such as invalid characters.
  */
 
-#ifndef Scanner_HPP
-#define Scanner_HPP
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
 
 #include <string>
 #include <vector>
@@ -15,58 +15,97 @@
 #include "token.hpp"
 
 /**
- * @class Scanner
- * @brief Performs lexical analysis on TINY language source code.
+ * @namespace TINY
+ * @brief Contains all components of the TINY language scanner.
  *
- * The Scanner processes input source code to produce a sequence of tokens.
+ * The `TINY` namespace organizes all classes, functions, and utilities
+ * related to the lexical analysis of the TINY programming language.
  */
-class Scanner {
-   public:
+namespace TINY
+{
     /**
-     * @brief Constructs a Scanner object with the given input string.
-     *
-     * @param input The source code to be tokenized.
+     * @namespace SCANNER
+     * @brief Contains all components related to the lexical analysis (scanning) of TINY language.
      */
-    Scanner(const std::string &input);
+    namespace SCANNER
+    {
 
-    /**
-     * @brief Extracts the next token from the input.
-     *
-     * @return The next token.
-     */
-    Token getNextToken();
+        /**
+         * @class Scanner
+         * @brief Performs lexical analysis on TINY language source code.
+         *
+         * The `Scanner` processes input source code to produce a sequence of tokens.
+         * It identifies keywords, operators, delimiters, and literals, and it reports
+         * invalid characters as necessary.
+         */
+        class Scanner
+        {
+        public:
+            /**
+             * @brief Constructs a `Scanner` object with the given input string.
+             *
+             * This constructor initializes the `Scanner` with the source code that
+             * needs to be tokenized.
+             *
+             * @param input The source code to be tokenized.
+             */
+            Scanner(const std::string &input);
 
-    /**
-     * @brief Checks if there are more tokens to be extracted.
-     *
-     * @return True if there are more tokens, false otherwise.
-     */
-    bool hasMoreTokens() const;
+            /**
+             * @brief Extracts the next token from the input source code.
+             *
+             * This method processes the source code and returns the next token
+             * identified by the `Scanner`.
+             *
+             * @return The next token.
+             */
+            Token getNextToken();
 
-   private:
-    std::string input; /**< The source code to be tokenized */
-    size_t pos = 0;    /**< Current position in the input string */
-    int line = 1;      /**< Current line number */
-    int column = 1;    /**< Current column number */
+            /**
+             * @brief Checks if there are more tokens to be extracted.
+             *
+             * This method determines if the end of the source code has been reached.
+             *
+             * @return True if there are more tokens, false otherwise.
+             */
+            bool hasMoreTokens() const;
 
-    /**
-     * @brief Peeks at the next character in the input without advancing the position.
-     *
-     * @return The next character.
-     */
-    char peek() const;
+        private:
+            std::string input; /**< The source code to be tokenized. */
+            size_t pos = 0;    /**< Current position in the input string. */
+            int line = 1;      /**< Current line number in the source code. */
+            int column = 1;    /**< Current column number in the source code. */
 
-    /**
-     * @brief Gets the next character in the input and advances the position.
-     *
-     * @return The next character.
-     */
-    char get();
+            /**
+             * @brief Peeks at the next character in the input without advancing the position.
+             *
+             * This method allows inspecting the next character in the source code
+             * without consuming it.
+             *
+             * @return The next character in the input.
+             */
+            char peek() const;
 
-    /**
-     * @brief Skips over whitespace characters in the input.
-     */
-    void skipWhitespace();
-};
+            /**
+             * @brief Gets the next character in the input and advances the position.
+             *
+             * This method reads the next character from the source code and moves
+             * the cursor forward.
+             *
+             * @return The next character in the input.
+             */
+            char get();
 
-#endif  // Scanner_HPP
+            /**
+             * @brief Skips over whitespace characters in the input.
+             *
+             * This method advances the cursor past any whitespace characters
+             * encountered in the source code.
+             */
+            void skipWhitespace();
+        };
+    } // namespace SCANNER
+
+} // namespace TINY
+
+#endif // SCANNER_HPP

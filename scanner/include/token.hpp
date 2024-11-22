@@ -38,7 +38,6 @@ namespace TINY
         {
             IF,            /**< "if" keyword */
             THEN,          /**< "then" keyword */
-            ELSE,          /**< "else" keyword */
             END,           /**< "end" keyword */
             REPEAT,        /**< "repeat" keyword */
             UNTIL,         /**< "until" keyword */
@@ -54,7 +53,6 @@ namespace TINY
             OPENBRACKET,   /**< Open parenthesis "(" */
             CLOSEDBRACKET, /**< Close parenthesis ")" */
             SEMICOLON,     /**< Semicolon ";" */
-            COLON,         /**< Colon ":" */
             IDENTIFIER,    /**< Identifier (e.g., variable names) */
             NUMBER,        /**< Numeric literal */
             UNKNOWN        /**< Unknown or invalid token */
@@ -130,10 +128,9 @@ namespace TINY
              * This table maps each TokenType enum value to its corresponding string
              * representation for use in debugging and output.
              */
-            static constexpr std::array<std::string_view, 22> tokenTypeStrings = {
+            static constexpr std::array<std::string_view, 20> tokenTypeStrings = {
                 "IF",            /**< "if" keyword */
                 "THEN",          /**< "then" keyword */
-                "ELSE",          /**< "else" keyword */
                 "END",           /**< "end" keyword */
                 "REPEAT",        /**< "repeat" keyword */
                 "UNTIL",         /**< "until" keyword */
@@ -149,7 +146,6 @@ namespace TINY
                 "OPENBRACKET",   /**< Open parenthesis "(" */
                 "CLOSEDBRACKET", /**< Close parenthesis ")" */
                 "SEMICOLON",     /**< Semicolon ";" */
-                "COLON",         /**< Colon ":" */
                 "IDENTIFIER",    /**< Identifier (e.g., variable names) */
                 "NUMBER",        /**< Numeric literal */
                 "UNKNOWN"        /**< Unknown or invalid token */

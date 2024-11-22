@@ -77,8 +77,6 @@ namespace TINY
                     return Token(TokenType::IF, identifier, line, column);
                 if (identifier == "then")
                     return Token(TokenType::THEN, identifier, line, column);
-                if (identifier == "else")
-                    return Token(TokenType::ELSE, identifier, line, column);
                 if (identifier == "end")
                     return Token(TokenType::END, identifier, line, column);
                 if (identifier == "repeat")

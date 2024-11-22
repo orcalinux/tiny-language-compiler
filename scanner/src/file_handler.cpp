@@ -67,5 +67,4 @@ namespace TINY
             file << content;
         }
     } // namespace SCANNER
-
 } // namespace TINY

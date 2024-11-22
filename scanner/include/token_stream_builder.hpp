@@ -77,7 +77,6 @@ namespace TINY
             std::vector<Token> tokens; /**< A vector storing the tokens generated from the input source code. */
         };
     } // namespace SCANNER
-
 } // namespace TINY
 
 #endif // TOKEN_STREAM_BUILDER_HPP

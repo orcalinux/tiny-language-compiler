@@ -284,5 +284,4 @@ namespace TINY
             }
         }
     } // namespace SCANNER
-
 } // namespace TINY

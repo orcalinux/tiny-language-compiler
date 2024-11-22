@@ -156,7 +156,6 @@ namespace TINY
             };
         };
     } // namespace SCANNER
-
 } // namespace TINY
 
 #endif // TOKEN_HPP

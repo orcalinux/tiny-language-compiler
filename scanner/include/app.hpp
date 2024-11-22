@@ -214,7 +214,6 @@ namespace TINY
             void handlePositionalArgs(int argc, char *argv[]);
         };
     } // namespace SCANNER
-
 } // namespace TINY
 
 #endif // APP_HPP

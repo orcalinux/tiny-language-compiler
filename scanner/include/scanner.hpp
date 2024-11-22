@@ -105,7 +105,6 @@ namespace TINY
             void skipWhitespace();
         };
     } // namespace SCANNER
-
 } // namespace TINY
 
 #endif // SCANNER_HPP

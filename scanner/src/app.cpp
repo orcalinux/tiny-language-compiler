@@ -129,13 +129,13 @@ void App::catchUnkonwnTokens(std::vector<TINY::SCANNER::Token> &tokens) {
                 hasUnknownTokens = true;
                 // set color to red
                 std::cout << "\033[1;31m";
-                std::cout << "The input contains unexpected tokens, please check the input file."
+                std::cerr << "The input contains unexpected tokens, please check the input file."
                           << std::endl
                           << "List of unexpected tokens:"
                           << std::endl;
             }
 
-            std::cout << "-\tError: unexpected token '" << token.getValue()
+            std::cerr << "-\tError: unexpected token '" << token.getValue()
                       << "' at line " << token.getLine()
                       << ", column " << token.getColumn()
                       << std::endl;

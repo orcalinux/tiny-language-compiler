@@ -18,72 +18,77 @@
 
 namespace TINY
 {
-
-    // Constructor to initialize the token with its type, value, and position
-    Token::Token(TokenType type, std::string_view value, int line, int column)
-        : type(type), value(value), line(line), column(column) {}
-
-    // Returns the type of the token
-    TokenType Token::getType() const
+    /**
+     * @namespace SCANNER
+     * @brief Contains all components related to the lexical analysis (scanning) of TINY language.
+     */
+    namespace SCANNER
     {
-        return type;
-    }
+        // Constructor to initialize the token with its type, value, and position
+        Token::Token(TokenType type, std::string_view value, int line, int column)
+            : type(type), value(value), line(line), column(column) {}
 
-    // Returns the value of the token as a string
-    std::string Token::getValue() const
-    {
-        return value;
-    }
-
-    // Returns the line number where the token was found
-    int Token::getLine() const
-    {
-        return line;
-    }
-
-    // Returns the column number where the token was found
-    int Token::getColumn() const
-    {
-        return column;
-    }
-
-    // Converts the token type to its string representation using a lookup table
-    std::string_view Token::getTokenTypeString() const
-    {
-        size_t index = static_cast<size_t>(type);
-
-        // Ensure the index is valid and within range
-        if (index >= tokenTypeStrings.size())
+        // Returns the type of the token
+        TokenType Token::getType() const
         {
-            throw std::out_of_range("Invalid TokenType index");
+            return type;
         }
 
-        // Return the string representation of the token type
-        return tokenTypeStrings[index];
-    }
-
-    // Converts the token to a detailed string representation
-    std::string Token::toString(bool includePosition) const
-    {
-        std::ostringstream oss;
-
-        // Add the token type as a string
-        oss << getTokenTypeString();
-
-        // Include the token's value, if it exists
-        if (!value.empty())
+        // Returns the value of the token as a string
+        std::string Token::getValue() const
         {
-            oss << " (" << value << ")";
+            return value;
         }
 
-        // Optionally include the token's line and column positions
-        if (includePosition)
+        // Returns the line number where the token was found
+        int Token::getLine() const
         {
-            oss << " [Line: " << line << ", Column: " << column << "]";
+            return line;
         }
 
-        // Return the final string representation
-        return oss.str();
-    }
+        // Returns the column number where the token was found
+        int Token::getColumn() const
+        {
+            return column;
+        }
 
+        // Converts the token type to its string representation using a lookup table
+        std::string_view Token::getTokenTypeString() const
+        {
+            size_t index = static_cast<size_t>(type);
+
+            // Ensure the index is valid and within range
+            if (index >= tokenTypeStrings.size())
+            {
+                throw std::out_of_range("Invalid TokenType index");
+            }
+
+            // Return the string representation of the token type
+            return tokenTypeStrings[index];
+        }
+
+        // Converts the token to a detailed string representation
+        std::string Token::toString(bool includePosition) const
+        {
+            std::ostringstream oss;
+
+            // Add the token type as a string
+            oss << getTokenTypeString();
+
+            // Include the token's value, if it exists
+            if (!value.empty())
+            {
+                oss << " (" << value << ")";
+            }
+
+            // Optionally include the token's line and column positions
+            if (includePosition)
+            {
+                oss << " [Line: " << line << ", Column: " << column << "]";
+            }
+
+            // Return the final string representation
+            return oss.str();
+        }
+    } // namespace SCANNER
 } // namespace TINY

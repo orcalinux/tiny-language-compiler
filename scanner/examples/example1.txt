@@ -1,1 +1,20 @@
-# Example 1: TINY language code sample
+{Example 1, test all known tokens and 
+multiple spaces and the end}
+x := 5;
+if x<10 then() {simple if 
+condition       }
+    x := 7;
+END {End if}
+
+if (x=7) write x;
+
+read d;
+
+repeat50040;
+repeat 50 until 66
+y = d+9/5
+x=f +y
+            newVar
+
+
+

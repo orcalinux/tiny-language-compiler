@@ -56,7 +56,6 @@ namespace TINY
                     get(); // Consume '='
                     return Token(TokenType::ASSIGN, ":=", line, column);
                 }
-                return Token(TokenType::COLON, ":", line, column);
             case '<':
                 return Token(TokenType::LESSTHAN, "<", line, column);
             case '=':

@@ -8,8 +8,8 @@
  */
 
 #include "scanner.hpp"
-#include <cctype>    // For character classification functions
-#include <stdexcept> // For exception handling (if needed)
+#include <cctype>
+#include <stdexcept>
 #include <stack>
 
 namespace TINY

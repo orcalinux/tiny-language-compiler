@@ -131,6 +131,17 @@ namespace TINY
              * @return True if an unclosed comment was detected, false otherwise.
              */
             bool skipWhitespaceAndComments();
+
+            /**
+             * @brief Checks if a character is an operator or delimiter.
+             *
+             * This method determines if the given character is one of the recognized
+             * operators or delimiters in the TINY language.
+             *
+             * @param c The character to check.
+             * @return True if the character is an operator or delimiter, false otherwise.
+             */
+            bool isOperatorOrDelimiter(char c) const;
         };
     } // namespace SCANNER
 } // namespace TINY

@@ -67,7 +67,9 @@ namespace TINY
             if (std::isalpha(current))
             {
                 std::string identifier(1, current);
-                while (std::isalnum(peek()))
+
+                // Accept only alphabetic characters for identifiers
+                while (std::isalpha(peek()))
                 {
                     identifier += get();
                 }

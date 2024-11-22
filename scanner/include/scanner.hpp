@@ -68,7 +68,7 @@ namespace TINY
              *
              * @return True if there are more tokens, false otherwise.
              */
-            bool hasMoreTokens() const;
+            bool hasMoreTokens();
 
         private:
             std::string input; /**< The source code to be tokenized. */
@@ -82,7 +82,7 @@ namespace TINY
              * This method allows inspecting the next character in the source code
              * without consuming it.
              *
-             * @return The next character in the input.
+             * @return The next character in the input, or '\0' if end of input.
              */
             char peek() const;
 
@@ -92,7 +92,7 @@ namespace TINY
              * This method reads the next character from the source code and moves
              * the cursor forward.
              *
-             * @return The next character in the input.
+             * @return The next character in the input, or '\0' if end of input.
              */
             char get();
 
@@ -103,6 +103,31 @@ namespace TINY
              * encountered in the source code.
              */
             void skipWhitespace();
+
+            /**
+             * @brief Skips over comments in the input source code.
+             *
+             * This method checks if the current position is at the start of a comment (indicated by a '{' character).
+             * If it is, the method skips over all characters until it finds the corresponding closing '}'.
+             * After successfully skipping a comment, it also skips any whitespace characters that follow the comment.
+             * If the end of the input is reached before finding a closing '}', the method returns `true` to indicate
+             * that an unclosed comment was detected.
+             *
+             * @return True if an unclosed comment was detected, false otherwise.
+             */
+            bool skipComments();
+
+            /**
+             * @brief Skips over whitespace and comments in the input.
+             *
+             * This method continuously skips whitespace and comments until it reaches
+             * a character that is neither whitespace nor part of a comment.
+             * If an unclosed comment is detected (i.e., the end of input is reached before a closing '}' is found),
+             * the method returns `true` to indicate the error.
+             *
+             * @return True if an unclosed comment was detected, false otherwise.
+             */
+            bool skipWhitespaceAndComments();
         };
     } // namespace SCANNER
 } // namespace TINY

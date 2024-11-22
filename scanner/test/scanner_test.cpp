@@ -119,15 +119,179 @@ namespace TINY
             EXPECT_EQ(token2.getType(), TokenType::UNKNOWN);
             EXPECT_EQ(token2.getValue(), "_");
 
-            // Second unknown token: "$"
+            // Third unknown token: "$"
             Token token3 = scanner.getNextToken(); // Store the next token
             EXPECT_EQ(token3.getType(), TokenType::UNKNOWN);
             EXPECT_EQ(token3.getValue(), "$");
 
-            // Third unknown token: "#"
+            // Fourth unknown token: "#"
             Token token4 = scanner.getNextToken(); // Store the next token
             EXPECT_EQ(token4.getType(), TokenType::UNKNOWN);
             EXPECT_EQ(token4.getValue(), "#");
+        }
+
+        // New test case: Comments
+        TEST(ScannerTest, Comments)
+        {
+            // Input with comments
+            std::string input = "read x; { This is a comment } write y;";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+
+            // Comment is skipped, no token generated for it
+
+            // Token: write
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::WRITE);
+            EXPECT_EQ(token4.getValue(), "write");
+
+            // Token: y
+            Token token5 = scanner.getNextToken();
+            EXPECT_EQ(token5.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token5.getValue(), "y");
+
+            // Token: ;
+            Token token6 = scanner.getNextToken();
+            EXPECT_EQ(token6.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token6.getValue(), ";");
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
+        }
+
+        // New test case: Comments with newlines
+        TEST(ScannerTest, CommentsWithNewlines)
+        {
+            // Input with comments containing newlines
+            std::string input = "read x; { This is a \n multi-line \n comment } \n write y;";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+            EXPECT_EQ(token1.getLine(), 1);
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+            EXPECT_EQ(token2.getLine(), 1);
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+            EXPECT_EQ(token3.getLine(), 1);
+
+            // Comment is skipped, including newlines
+
+            // Token: write
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::WRITE);
+            EXPECT_EQ(token4.getValue(), "write");
+            EXPECT_EQ(token4.getLine(), 4); // Lines have advanced due to newlines in comment
+
+            // Token: y
+            Token token5 = scanner.getNextToken();
+            EXPECT_EQ(token5.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token5.getValue(), "y");
+            EXPECT_EQ(token5.getLine(), 4);
+
+            // Token: ;
+            Token token6 = scanner.getNextToken();
+            EXPECT_EQ(token6.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token6.getValue(), ";");
+            EXPECT_EQ(token6.getLine(), 4);
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
+        }
+
+        // New test case: Unclosed comment
+        TEST(ScannerTest, UnclosedComment)
+        {
+            // Input with an unclosed comment
+            std::string input = "read x; { This is an unclosed comment ";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+
+            // Attempt to get next token, should return UNKNOWN due to unclosed comment
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::UNKNOWN);
+            EXPECT_EQ(token4.getValue(), "Unclosed comment");
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
+        }
+
+        // New test case: Multiple comments
+        TEST(ScannerTest, MultipleComments)
+        {
+            // Input with multiple comments
+            std::string input = "{First comment} read x; {Second comment} write y; {Third comment}";
+
+            Scanner scanner(input);
+
+            // Token: read
+            Token token1 = scanner.getNextToken();
+            EXPECT_EQ(token1.getType(), TokenType::READ);
+            EXPECT_EQ(token1.getValue(), "read");
+
+            // Token: x
+            Token token2 = scanner.getNextToken();
+            EXPECT_EQ(token2.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token2.getValue(), "x");
+
+            // Token: ;
+            Token token3 = scanner.getNextToken();
+            EXPECT_EQ(token3.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token3.getValue(), ";");
+
+            // Token: write
+            Token token4 = scanner.getNextToken();
+            EXPECT_EQ(token4.getType(), TokenType::WRITE);
+            EXPECT_EQ(token4.getValue(), "write");
+
+            // Token: y
+            Token token5 = scanner.getNextToken();
+            EXPECT_EQ(token5.getType(), TokenType::IDENTIFIER);
+            EXPECT_EQ(token5.getValue(), "y");
+
+            // Token: ;
+            Token token6 = scanner.getNextToken();
+            EXPECT_EQ(token6.getType(), TokenType::SEMICOLON);
+            EXPECT_EQ(token6.getValue(), ";");
+
+            EXPECT_FALSE(scanner.hasMoreTokens());
         }
 
     } // namespace SCANNER

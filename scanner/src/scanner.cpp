@@ -8,32 +8,40 @@
  */
 
 #include "scanner.hpp"
-#include <cctype>
-#include <stdexcept>
+#include <cctype>    // For character classification functions
+#include <stdexcept> // For exception handling (if needed)
 
 namespace TINY
 {
-    /**
-     * @namespace SCANNER
-     * @brief Contains all components related to the lexical analysis (scanning) of TINY language.
-     */
     namespace SCANNER
     {
 
+        // Constructor: Initializes the Scanner with the input source code
         Scanner::Scanner(const std::string &input) : input(input) {}
 
+        // Extracts the next token from the input source code
         Token Scanner::getNextToken()
         {
-            skipWhitespace();
+            // Skip any whitespace and comments before processing the next token
+            bool unclosedComment = skipWhitespaceAndComments();
 
+            // If an unclosed comment was detected, return an UNKNOWN token with an error message
+            if (unclosedComment)
+            {
+                return Token(TokenType::UNKNOWN, "Unclosed comment", line, column);
+            }
+
+            // Check if we've reached the end of the input
             if (pos >= input.size())
             {
+                // Return an UNKNOWN token to indicate end of input (or define an EOF token if desired)
                 return Token(TokenType::UNKNOWN, "", line, column);
             }
 
+            // Get the next character from the input
             char current = get();
 
-            // Single character tokens
+            // Handle single-character tokens using a switch statement
             switch (current)
             {
             case '+':
@@ -51,11 +59,13 @@ namespace TINY
             case ';':
                 return Token(TokenType::SEMICOLON, ";", line, column);
             case ':':
+                // Check if the next character is '=' to form the ':=' token
                 if (peek() == '=')
                 {
                     get(); // Consume '='
                     return Token(TokenType::ASSIGN, ":=", line, column);
                 }
+                // If not, return an UNKNOWN token for ':'
                 return Token(TokenType::UNKNOWN, ":", line, column);
             case '<':
                 return Token(TokenType::LESSTHAN, "<", line, column);
@@ -66,15 +76,15 @@ namespace TINY
             // Identifiers and keywords
             if (std::isalpha(current))
             {
-                std::string identifier(1, current);
+                std::string identifier(1, current); // Start building the identifier
 
-                // Accept only alphabetic characters for identifiers
+                // Continue consuming alphabetic characters
                 while (std::isalpha(peek()))
                 {
                     identifier += get();
                 }
 
-                // Check for keywords
+                // Check if the identifier matches any reserved keywords
                 if (identifier == "if")
                     return Token(TokenType::IF, identifier, line, column);
                 if (identifier == "then")
@@ -90,61 +100,142 @@ namespace TINY
                 if (identifier == "write")
                     return Token(TokenType::WRITE, identifier, line, column);
 
+                // If not a keyword, it's an identifier
                 return Token(TokenType::IDENTIFIER, identifier, line, column);
             }
 
-            // Numbers
+            // Numbers (integer literals)
             if (std::isdigit(current))
             {
-                std::string number(1, current);
+                std::string number(1, current); // Start building the number literal
+
+                // Continue consuming digit characters
                 while (std::isdigit(peek()))
                 {
                     number += get();
                 }
+
+                // Return a NUMBER token
                 return Token(TokenType::NUMBER, number, line, column);
             }
 
-            // Unknown token
+            // If the character doesn't match any known token patterns, return an UNKNOWN token
             return Token(TokenType::UNKNOWN, std::string(1, current), line, column);
         }
 
-        bool Scanner::hasMoreTokens() const
+        // Checks if there are more tokens to be extracted
+        bool Scanner::hasMoreTokens()
         {
-            return pos < input.size();
+            // Save the current state to avoid modifying the scanner's actual state
+            size_t tempPos = pos;
+            int tempLine = line;
+            int tempColumn = column;
+
+            // Temporarily skip whitespace and comments
+            bool unclosedComment = skipWhitespaceAndComments();
+
+            // Determine if there are more tokens
+            bool hasMore = (pos < input.size()) && !unclosedComment;
+
+            // Restore the scanner's state
+            pos = tempPos;
+            line = tempLine;
+            column = tempColumn;
+
+            return hasMore;
         }
 
+        // Skips over whitespace and comments in the input
+        bool Scanner::skipWhitespaceAndComments()
+        {
+            while (true)
+            {
+                skipWhitespace();
+
+                bool unclosedComment = skipComments();
+                if (unclosedComment)
+                {
+                    // Unclosed comment detected; return true to indicate error
+                    return true;
+                }
+
+                // If no more whitespace or comments, break out of the loop
+                if (!std::isspace(peek()) && peek() != '{')
+                {
+                    break;
+                }
+            }
+            // No unclosed comment detected
+            return false;
+        }
+
+        // Skips over whitespace characters in the input
+        void Scanner::skipWhitespace()
+        {
+            // Consume all consecutive whitespace characters
+            while (pos < input.size() && std::isspace(peek()))
+            {
+                get(); // Consume the whitespace character
+            }
+        }
+
+        // Skips over comments in the input source code
+        bool Scanner::skipComments()
+        {
+            if (pos < input.size() && peek() == '{')
+            {
+                get(); // Consume '{'
+                while (pos < input.size() && peek() != '}')
+                {
+                    get(); // Consume characters inside the comment
+                }
+                if (pos < input.size())
+                {
+                    get();            // Consume '}'
+                    skipWhitespace(); // Skip any whitespace after the comment
+                    return false;     // Comment was successfully skipped
+                }
+                else
+                {
+                    // EOF reached before closing '}'
+                    // Unclosed comment detected
+                    return true;
+                }
+            }
+            return false; // No comment to skip
+        }
+
+        // Peeks at the next character in the input without advancing the position
         char Scanner::peek() const
         {
+            // Return the next character if within bounds, or '\0' if at the end
             return pos < input.size() ? input[pos] : '\0';
         }
 
+        // Gets the next character in the input and advances the position
         char Scanner::get()
         {
+            // Check if at the end of input
             if (pos >= input.size())
             {
                 return '\0';
             }
 
-            char currentChar = input[pos++];
+            char currentChar = input[pos++]; // Get the current character and advance position
+
+            // Update line and column numbers for error reporting and tracking
             if (currentChar == '\n')
             {
-                line++;
-                column = 1;
+                line++;     // Move to the next line
+                column = 1; // Reset column number
             }
             else
             {
-                column++;
+                column++; // Move to the next column
             }
 
             return currentChar;
         }
 
-        void Scanner::skipWhitespace()
-        {
-            while (std::isspace(peek()))
-            {
-                get();
-            }
-        }
     } // namespace SCANNER
 } // namespace TINY

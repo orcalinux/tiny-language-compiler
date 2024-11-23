@@ -1,6 +1,0 @@
-{Exampl 2, genral test}
-x := 5; { this is a comment }
-write x;
-read y;
-y : /x; {: is an unknown token} 
-

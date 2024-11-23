@@ -1,8 +1,0 @@
-{Exmaple 4, nested comments and some invalid tokens}
-{ Outer comment { Inner comment } }
-x := 5;
-if x = 10 then y := y + 1;
-x : @$ # ! _ & *^~|||   ;
-
-
-        

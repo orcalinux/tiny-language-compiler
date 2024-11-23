@@ -33,6 +33,7 @@ namespace Tiny::Data {
  * Each token consists of a type, value, and its position in the source code.
  */
 class Token : public QObject {
+    Q_OBJECT
    public:
     /**
      * @enum TokenType

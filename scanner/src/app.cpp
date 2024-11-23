@@ -283,7 +283,7 @@ void App::defaultActions() {
     }
 
     // if file mode is enabled, and no input file is specified, throw an exception
-    if (!interactiveMode && inputFilePath.empty()) {
+    if (!interactiveMode && inputFilePath.empty() && !showHelp) {
         throw std::invalid_argument("Input file not specified, use -h or --help for usage information.");
     }
 

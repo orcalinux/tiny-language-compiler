@@ -4,6 +4,17 @@ CXXFLAGS := -std=c++17 -Iinclude -I/usr/include/gtest -Wall -Wextra -Werror
 GTEST_DIR := /usr/include/gtest
 GTEST_LIB_DIR := /usr/lib/x86_64-linux-gnu
 
+# Build type (debug or release)
+BUILD_TYPE ?= release
+
+ifeq ($(BUILD_TYPE), debug)
+    CXXFLAGS += -O0 -g
+else ifeq ($(BUILD_TYPE), release)
+    CXXFLAGS += -O3
+else
+    $(error Unknown BUILD_TYPE "$(BUILD_TYPE)")
+endif
+
 # Directories
 SRC_DIR := src
 INCLUDE_DIR := include
@@ -16,7 +27,7 @@ SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 
 # Object files excluding the main program
-TEST_OBJS := $(filter-out $(BUILD_DIR)/mian.o, $(OBJS))
+TEST_OBJS := $(filter-out $(BUILD_DIR)/main.o, $(OBJS))
 
 # Target executable
 TARGET := scanner
@@ -61,6 +72,5 @@ test: $(TEST_OBJS) | $(BUILD_DIR)
 		$(TEST_DIR)/$(TEST_FILE)_test.cpp $(TEST_OBJS) -lgtest -lgtest_main -pthread \
 		-o $(BUILD_DIR)/$(TEST_FILE)_test && ./$(BUILD_DIR)/$(TEST_FILE)_test; \
 	fi
-
 
 .PHONY: all clean run test

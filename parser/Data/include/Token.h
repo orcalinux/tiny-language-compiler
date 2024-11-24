@@ -32,8 +32,7 @@ namespace Tiny::Data {
  *
  * Each token consists of a type, value, and its position in the source code.
  */
-class Token : public QObject {
-    Q_OBJECT
+class Token {
    public:
     /**
      * @enum TokenType
@@ -61,7 +60,6 @@ class Token : public QObject {
         NUMBER,        /**< Numeric literal */
         UNKNOWN        /**< Unknown or invalid token */
     };
-    Q_ENUM(TokenType)
 
     /**
      * @brief Constructs a Token object.
@@ -71,8 +69,17 @@ class Token : public QObject {
      * @param line The line number where the token appears.
      * @param column The column number where the token appears.
      */
-    Token(TokenType type, QStringView value, int line, int column, QObject *parent);
+    Token(TokenType type, QStringView value, int line, int column);
 
+    /**
+     * @brief Constructs a Token object.
+     *
+     * @param type The type of the token.
+     * @param value The string representation of the token.
+     * @param line The line number where the token appears.
+     * @param column The column number where the token appears.
+     */
+    Token(TokenType type, std::string value, int line, int column);
     /**
      * @brief Gets the type of the token.
      * @return The token's type.
@@ -103,11 +110,26 @@ class Token : public QObject {
      */
     QString toString(bool includePosition = false) const;
 
+
+    // copy constructor
+    Token(const Token &other) = default;
+
+    // move constructor
+    Token(Token &&other);
+
+    // copy assignment operator
+    Token &operator=(const Token &other) = default;
+
+    // move assignment operator
+    Token &operator=(Token &&other);
+
+    // destructor
+    ~Token() = default;
    private:
-    const TokenType type; /**< The type of the token */
-    const QString value;  /**< The value of the token */
-    const int line;       /**< The line number of the token */
-    const int column;     /**< The column number of the token */
+    TokenType type; /**< The type of the token */
+    QString value;  /**< The value of the token */
+    int line;       /**< The line number of the token */
+    int column;     /**< The column number of the token */
 
     /**
      * @brief Converts the token type to a string representation.

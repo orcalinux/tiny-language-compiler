@@ -16,8 +16,29 @@
 
 namespace Tiny::Data {
 // Constructor to initialize the token with its type, value, and position
-Token::Token(TokenType type, QStringView value, int line, int column, QObject *parent)
-    : type(type), value(value.toString()), line(line), column(column), QObject(parent) {}
+Token::Token(TokenType type, QStringView value, int line, int column)
+    : type(type), value(value.toString()), line(line), column(column) {}
+
+// Constructor to initialize the token with its type, value, and position
+Token::Token(TokenType type, std::string value, int line, int column)
+    : type(type), value(QString::fromStdString(value)), line(line), column(column) {}
+
+// Move constructor to efficiently transfer ownership of the token data
+Token::Token(Token &&other)
+    : type(other.type), value(std::move(other.value)), line(other.line), column(other.column) {}
+
+// Move assignment operator to efficiently transfer ownership of the token data
+Token &Token::operator=(Token &&other)
+{
+    if(this != &other)
+    {
+        type = other.type;
+        value = std::move(other.value);
+        line = other.line;
+        column = other.column;
+    }
+    return *this;
+}
 
 // Returns the type of the token
 Token::TokenType Token::getType() const {

@@ -41,7 +41,6 @@ file(GLOB Widgets_SRC
     "${ROOT_DIR}/Widgets/include/*.h"
 )
 
-
 set(Widgets
     MainWindow.cpp  MainWindow.h
     ${Widgets_SRC}
@@ -72,8 +71,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${Scanner}
         ${Data}
         ${FileHandling}
+        resources.qrc
     )
 endif()
+
 
 # Include directories for headers
 include_directories(

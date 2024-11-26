@@ -2,8 +2,7 @@
 
 namespace Tiny::Widgets {
 
-ToolBar::ToolBar(QWidget *parent)
-{
+ToolBar::ToolBar(QWidget* parent) {
     // toolbar configrations
     setMovable(false);
     setFloatable(false);
@@ -23,15 +22,13 @@ ToolBar::ToolBar(QWidget *parent)
     initHelpActions();
 }
 
-ToolBar::~ToolBar()
-{
+ToolBar::~ToolBar() {
     foreach (auto action, this->actions) {
         delete action;
     }
 }
 
-void ToolBar::initFileActions()
-{
+void ToolBar::initFileActions() {
     // new text file action
     Action* newFileTextAction = new Action();
     newFileTextAction->name = ActionName::NewTextFile;
@@ -83,8 +80,7 @@ void ToolBar::initFileActions()
     addToolbarAction(saveAsFileAction);
 }
 
-void ToolBar::initViewActions()
-{
+void ToolBar::initViewActions() {
     // view text
     Action* viewTextAction = new Action();
     viewTextAction->name = ActionName::ViewTextFile;
@@ -126,13 +122,9 @@ void ToolBar::initViewActions()
         qDebug() << "View syntax tree";
     };
     addToolbarAction(viewSyntaxTreeAction, true, true);
-
-
-
 }
 
-void ToolBar::initHelpActions()
-{
+void ToolBar::initHelpActions() {
     // help action
     Action* helpAction = new Action();
     helpAction->name = ActionName::Help;
@@ -154,8 +146,7 @@ void ToolBar::initHelpActions()
     addToolbarAction(aboutAction);
 }
 
-void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefault)
-{
+void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefault) {
     QString actionName = actionNameToString[action->name];
     // load icon, it has the same name as the action
     QIcon icon(QString(":/resources/%1.png").arg(actionName));
@@ -165,7 +156,7 @@ void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefaul
     }
 
     // create the action
-    QAction *newAction = new QAction(icon, actionName, this);
+    QAction* newAction = new QAction(icon, actionName, this);
     // set the shortcut if it is not empty
     if (!action->shortcut.isEmpty()) {
         newAction->setShortcut(action->shortcut);
@@ -198,32 +189,29 @@ void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefaul
     this->actions.append(newAction);
 }
 
-void ToolBar::initStyle()
-{
+void ToolBar::initStyle() {
     // set the style of the toolbar
-    QString style = "QToolBar {"
-                    "background-color: #1e1e1e;"
-                    "border: 1px solid #c0c0c0;"
-                    "padding: 5px;"
-                    "}"
-                    "QToolBar::separator {"
-                    "width: 1px;"
-                    "height: 25px;"
-                    "background-color: #c0c0c0;"
-                    "margin: 0 5px;"
-                    "}"
-                    "QToolButton {"
-                    "color: #c0c0c0;"
-                    "}"
-                    "QToolButton:hover {"
-                    "background-color: #2e2e2e;"
-                    "}"
-                    "QToolButton:checked {"
-                    "background-color: #3e3e3e;"
-                    "}"
-        ;
-
-
+    QString style =
+        "QToolBar {"
+        "background-color: #1e1e1e;"
+        "border: 1px solid #c0c0c0;"
+        "padding: 5px;"
+        "}"
+        "QToolBar::separator {"
+        "width: 1px;"
+        "height: 25px;"
+        "background-color: #c0c0c0;"
+        "margin: 0 5px;"
+        "}"
+        "QToolButton {"
+        "color: #c0c0c0;"
+        "}"
+        "QToolButton:hover {"
+        "background-color: #2e2e2e;"
+        "}"
+        "QToolButton:checked {"
+        "background-color: #3e3e3e;"
+        "}";
 
     this->setStyleSheet(style);
 }
@@ -239,7 +227,6 @@ const QMap<ToolBar::ActionName, QString> ToolBar::actionNameToString = {
     {ToolBar::ActionName::ViewParseTree, "View Parse Tree"},
     {ToolBar::ActionName::ViewSyntaxTree, "View Syntax Tree"},
     {ToolBar::ActionName::Help, "Help"},
-    {ToolBar::ActionName::About, "About"}
-};
+    {ToolBar::ActionName::About, "About"}};
 
-}
+}  // namespace Tiny::Widgets

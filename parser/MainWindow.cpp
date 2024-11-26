@@ -1,8 +1,7 @@
 #include "MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-{
+    : QMainWindow(parent) {
     // set the window title
     setWindowTitle("Tiny Parser");
 
@@ -18,18 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {}
 
-void MainWindow::initToolbar()
-{
+void MainWindow::initToolbar() {
     // Create a new toolba
     Tiny::Widgets::ToolBar *toolbar = new Tiny::Widgets::ToolBar(this);
     this->addToolBar(toolbar);
 }
 
-void MainWindow::initStatusBar()
-{
+void MainWindow::initStatusBar() {
     // Create a new status bar
     QStatusBar *statusBar = new QStatusBar(this);
     this->setStatusBar(statusBar);
 }
-
-

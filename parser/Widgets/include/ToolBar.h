@@ -1,21 +1,19 @@
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
 
-#include <QToolBar>
 #include <QAction>
-#include <QIcon>
 #include <QDebug>
+#include <QIcon>
 #include <QObject>
+#include <QToolBar>
 #include <QVector>
-
 #include <functional>
 
 namespace Tiny::Widgets {
 
-class ToolBar : public QToolBar
-{
+class ToolBar : public QToolBar {
     Q_OBJECT
-public:
+   public:
     enum class ActionName {
         NewTextFile,
         NewTokensFile,
@@ -30,15 +28,14 @@ public:
         About
     };
 
-    explicit ToolBar(QWidget *parent = nullptr);
+    explicit ToolBar(QWidget* parent = nullptr);
     ~ToolBar();
-
 
     QAction* getAction(const QString& name);
     void setActionEnabled(const QString& name, bool enabled);
     void setActionVisible(const QString& name, bool visible);
 
-private:
+   private:
     QVector<QAction*> actions;
 
     void initFileActions();
@@ -58,14 +55,10 @@ private:
     // lookup table for action enum to string
     static const QMap<ActionName, QString> actionNameToString;
 
+   public slots:
 
+   signals:
 
-public slots:
-
-signals:
-
-
-
-}; // class ToolBar
-} // namespace Tiny::Widgets
-#endif // TOOLBAR_H
+};  // class ToolBar
+}  // namespace Tiny::Widgets
+#endif  // TOOLBAR_H

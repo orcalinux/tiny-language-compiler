@@ -1,27 +1,25 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDebug>
+#include <QGuiApplication>
+#include <QMainWindow>
+#include <QScreen>
+#include <QStatusBar>
+#include <QStyle>
+#include <QToolBar>
+
 #include "ToolBar.h"
 
-#include <QMainWindow>
-#include <QGuiApplication>
-#include <QStyle>
-#include <QScreen>
-#include <QDebug>
-#include <QToolBar>
-#include <QStatusBar>
-
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
-private:
+   private:
     void initToolbar();
     void initStatusBar();
 };
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/Save File.png</file>
+        <file>resources/Save As File.png</file>
+        <file>resources/Open File.png</file>
+        <file>resources/New Tokens File.png</file>
+        <file>resources/New Text File.png</file>
+        <file>resources/Paste.png</file>
+        <file>resources/Cut.png</file>
+        <file>resources/Copy.png</file>
+        <file>resources/View Tokens.png</file>
+        <file>resources/View Text.png</file>
+        <file>resources/Help.png</file>
+        <file>resources/About.png</file>
+        <file>resources/View Syntax Tree.png</file>
+        <file>resources/View Parse Tree.png</file>
+    </qresource>
+</RCC>

@@ -1,203 +1,43 @@
-# This file is used to ignore files which are generated
-# ----------------------------------------------------------------------------
-
-# Compiled Object files
+# Compiled object files
 *.o
-*.obj
 
-# Precompiled Header files
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+# Compiled dynamic libraries
+*.dll
 *.so
 *.dylib
-*.dll
 
-# Compiled Static libraries
-*.a
+# Compiled static libraries
 *.lib
+*.a
 
 # Executable files
-scanner
 *.exe
 *.out
-
-# Debug files
-*.dSYM/
-*.stackdump
-
-# Temporary files and backups
-*.tmp
-*.swp
-*.bak
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# C++ cache files and directories
-*.cache
-.cache/
-*.ccache
-.ccache/
-
-# Visual Studio Code workspace settings
-.vscode/
-*.code-workspace
-
-# CLion and JetBrains IDE files
-.idea/
-cmake-build-*/
-
-# Ignore binary and debug folders
-bin/
-debug/
-release/
-build/
-
-# Compiled Object files
-*.o
-*.obj
-
-# Precompiled Header files
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.a
-*.lib
-
-# Executable files
-scanner
-*.exe
-*.out
-
-# Debug files
-*.dSYM/
-*.stackdump
-
-# Temporary files and backups
-*.tmp
-*.swp
-*.bak
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# C++ cache files and directories
-*.cache
-.cache/
-*.ccache
-.ccache/
-
-# Visual Studio Code workspace settings
-.vscode/
-*.code-workspace
-
-# CLion and JetBrains IDE files
-.idea/
-cmake-build-*/
-
-# Ignore binary and debug folders
-bin/
-debug/
-release/
-
-# Qt-specific files
-*.pro.user
-*.qmake.stash
-Makefile*
-*.moc
-*.rcc
-*.qrc.dep
-*.qmlc
-*.qmltypes
-ui_*.h
-
-# CMake-generated files
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-CTestTestfile.cmake
-Makefile
-
-*~
-*.autosave
-*.a
-*.core
-*.moc
-*.o
-*.obj
-*.orig
-*.rej
-*.so
-*.so.*
-*_pch.h.cpp
-*_resource.rc
-*.qm
-.#*
-*.*#
-core
-!core/
-tags
-.DS_Store
-.directory
-*.debug
-Makefile*
-*.prl
 *.app
-moc_*.cpp
-ui_*.h
-qrc_*.cpp
-Thumbs.db
-*.res
-*.rc
-/.qmake.cache
-/.qmake.stash
 
-# qtcreator generated files
-*.pro.user*
-CMakeLists.txt.user*
+# Build directories
+/build/
+/bin/
 
-# xemacs temporary files
-*.flc
+# Temporary files
+*.tmp
+*~
+*.swp
+*.swo
+*.swn
 
-# Vim temporary files
-.*.swp
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
 
-# Visual Studio generated files
-*.ib_pdb_index
-*.idb
-*.ilk
-*.pdb
-*.sln
-*.suo
-*.vcproj
-*vcproj.*.*.user
-*.ncb
-*.sdf
-*.opensdf
-*.vcxproj
-*vcxproj.*
+# Mac OS X files
+.DS_Store
 
-# MinGW generated files
-*.Debug
-*.Release
+# Logs
+logs/
+*.log
 
-# Python byte code
-*.pyc
-
-# Binaries
-# --------
-*.dll
-*.exe
-
+# Ignore the executable
+tiny_parser

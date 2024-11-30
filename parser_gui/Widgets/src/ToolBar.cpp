@@ -34,8 +34,9 @@ void ToolBar::initFileActions() {
     newFileTextAction->name = ActionName::NewTextFile;
     newFileTextAction->statusTip = "Create a new text file";
     newFileTextAction->shortcut = QKeySequence::New;
-    newFileTextAction->slot = []() {
+    newFileTextAction->slot = [this]() {
         qDebug() << "New text file";
+        emit newTextTab();
     };
     addToolbarAction(newFileTextAction);
 
@@ -44,8 +45,9 @@ void ToolBar::initFileActions() {
     newTokensFileAction->name = ActionName::NewTokensFile;
     newTokensFileAction->statusTip = "Create a new tokens file";
     newTokensFileAction->shortcut = QKeySequence("Ctrl+Shift+N");
-    newTokensFileAction->slot = []() {
+    newTokensFileAction->slot = [this]() {
         qDebug() << "New tokens file";
+        emit newTokensTab();
     };
     addToolbarAction(newTokensFileAction);
 

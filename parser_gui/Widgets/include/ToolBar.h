@@ -58,6 +58,8 @@ class ToolBar : public QToolBar {
    public slots:
 
    signals:
+    void newTextTab();
+    void newTokensTab();
 
 };  // class ToolBar
 }  // namespace Tiny::Widgets

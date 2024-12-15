@@ -296,26 +296,21 @@ Node *Parser::parseSimpleExp()
     // you might build the tree right-associatively:
     // a + a + a + a = a + (a + (a + a))
 
-    // Start from the right:
-    Node* root = terms.back(); // last term
-    terms.pop_back();
-
-    // Combine from the rightmost operator backward
-    for (int i = (int)ops.size() - 1; i >= 0; i--) {
+    // Start from the left
+    Node* root = terms[0]; // The first term is the initial root
+    for (int i = 0; i < (int)ops.size(); i++) {
         Node* op = ops[i];
-        Node* leftTerm = terms[i];  // corresponding left term
+        Node* rightTerm = terms[i + 1]; // The next term after the operator
 
-        // Build the subtree: op(leftTerm, root)
-        op->addChild(leftTerm);
+        // For left-associativity: op(root, rightTerm)
         op->addChild(root);
-        root = op; // op now becomes the new root
+        op->addChild(rightTerm);
+
+        root = op; // Now op becomes the current root
     }
 
-    // Now 'root' represents the full expression tree.
-
-    // Assign levels now that the full structure is known
+    // Now 'root' is left-associative
     assignLevels(root, currentLevel);
-
     return root;
 }
 
@@ -400,23 +395,19 @@ Node *Parser::parseTerm()
     }
 
     // Now build the tree from these operators and factors.
-    // For example, if you want right-associativity:
-    Node* root = factors.back();
-    factors.pop_back();
-
-    // Combine from the rightmost operator backward
-    for (int i = (int)ops.size() - 1; i >= 0; i--) {
+    Node* root = factors[0]; // Start with the first factor
+    for (int i = 0; i < (int)ops.size(); i++) {
         Node* op = ops[i];
-        Node* leftFactor = factors[i];
+        Node* rightFactor = factors[i + 1];
 
-        op->addChild(leftFactor);
+        // Left-associative: ( (firstFactor op secondFactor) op thirdFactor ) op fourthFactor
         op->addChild(root);
-        root = op;
+        op->addChild(rightFactor);
+
+        root = op; // Update root
     }
 
-    // root now represents the entire term expression tree
-    assignLevels(root, currentLevel); // Assign levels after the entire tree is known
-
+    assignLevels(root, currentLevel);
     return root;
 }
 

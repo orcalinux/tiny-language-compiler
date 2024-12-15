@@ -51,7 +51,7 @@ signals:
      * @brief Emitted when a parsing error occurs (e.g., unexpected token or EOF).
      * @param message A descriptive error message.
      */
-    void error(QString message);
+    void error(Tiny::Data::Token token, QString message);
 
 private:
     QList<Tiny::Data::Token> tokens;  ///< The list of tokens to parse.

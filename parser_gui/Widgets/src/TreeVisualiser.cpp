@@ -23,24 +23,7 @@ void TreeVisualiser::paintEvent(QPaintEvent *event) {
 }
 
 TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
-    Node *nroot = new Node(Node::NodeType::Expression, "+");
-    nroot->setLevel(1);
-    Node *child1 = new Node(Node::NodeType::Number, "3");
-    child1->setLevel(2);
-    Node *child2 = new Node(Node::NodeType::Number, "4");
-    child2->setLevel(1);
-    Node *child3 = new Node(Node::NodeType::Number, "5");
-    child3->setLevel(3);
 
-    Node *child4 = new Node(Node::NodeType::Number, "A7a");
-    Node *child5 = new Node(Node::NodeType::Addition, "5555555");
-
-    this->root = nroot;
-    this->root->addChild(child1);
-    this->root->addChild(child2);
-    child2->addChild(child3);
-    child2->addChild(child4);
-    child1->addChild(child5);
 }
 
 void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int level) {
@@ -62,7 +45,7 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
     if (!hasValue(node->getType())) {
         nodeText = node->getNodeTypeString().toString() + "\n(" + node->getValue() + ")";
     } else {
-        nodeText = node->getValue();
+        nodeText = node->getNodeTypeString().toString();
     }
     painter->drawText(QRect(x - 40, y - 20, 80, 40),
                       Qt::AlignCenter | Qt::TextWordWrap, nodeText);
@@ -94,14 +77,14 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
         int childWidth = childWidths[i];
 
         // Calculate position for each child
-        int childX = startX + childWidth / 2;
-        int childY = (child->getLevel() == node->getLevel())? y : y + verticalSpacing;
+        int childX = startX + childWidth / 2 - 20;
+        int childY = y + verticalSpacing;
 
         // Draw connection line to child node
         painter->setPen(QPen(Qt::black, 2));
         int yLineOffset = (child->getLevel() == node->getLevel())? 0 : 20;
 
-        painter->drawLine(x, y + yLineOffset, childX, childY);
+        painter->drawLine(x, y + 20, childX, childY);
 
         // Recursively draw the child node
         drawTree(painter, child, childX, childY, childWidth, child->getLevel());

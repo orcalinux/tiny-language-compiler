@@ -36,9 +36,10 @@ namespace Tiny::Widgets {
         void wheelEvent(QWheelEvent* event) override;
 
         bool isOval(Node::NodeType type) {
-            if ((type == Node::NodeType::Identifier) ||
-                (type == Node::NodeType::Number) ||
-                (type == Node::NodeType::Comparison)) {
+            if ((type == Node::NodeType::Id) ||
+                (type == Node::NodeType::Const) ||
+
+                (type == Node::NodeType::Op)) {
                 return true;
             } else {
                 return false;
@@ -46,11 +47,11 @@ namespace Tiny::Widgets {
         }
 
         bool hasValue(Node::NodeType type) {
-            if ((type == Node::NodeType::Identifier) ||
-                (type == Node::NodeType::Number) ||
-                (type == Node::NodeType::ReadStatement) ||
-                (type == Node::NodeType::AssignStatement) ||
-                (type == Node::NodeType::Comparison)) {
+            if ((type == Node::NodeType::If) ||
+                    (type == Node::NodeType::Write) ||
+                    (type == Node::NodeType::Repeat)
+                )
+                {
                 return true;
             } else {
                 return false;

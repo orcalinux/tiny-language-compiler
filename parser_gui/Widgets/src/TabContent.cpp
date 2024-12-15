@@ -51,7 +51,7 @@ TabContent::TabContent(bool tokenTextOnly, bool newFile, QWidget *parent) :
     parser->setTokens(tokensList);
     parser->parse();
 
-    connect(parser, &Parser::error, this, [this](QString message) {
+    connect(parser, &Parser::error, this, [this](Tiny::Data::Token token, QString message) {
         // show the error
         // TODO
         //qDebug() << message;
@@ -191,6 +191,8 @@ void TabContent::textChanged()
             // update the tree visualiser
             if (root != nullptr) {
                 this->treeVisualiser->setRoot(root);
+            } else {
+                this->treeVisualiser->setRoot(nullptr);
             }
         }
     }

@@ -19,27 +19,31 @@ void TreeVisualiser::paintEvent(QPaintEvent *event) {
     int treeWidth = calculateTreeWidth(root);
 
     // Draw the entire tree
-    drawTree(&painter, root, width() / 2, 50, treeWidth, 1);
+    drawTree(&painter, root, width() / 2, 50, treeWidth, root->getLevel());
 }
 
 TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
     Node *nroot = new Node(Node::NodeType::Expression, "+");
-    // nroot->setLevel(1);
+    nroot->setLevel(1);
     Node *child1 = new Node(Node::NodeType::Number, "3");
-    // child1->setLevel(1);
+    child1->setLevel(2);
     Node *child2 = new Node(Node::NodeType::Number, "4");
-    // child2->setLevel(2);
+    child2->setLevel(1);
     Node *child3 = new Node(Node::NodeType::Number, "5");
-    // child3->setLevel(3);
+    child3->setLevel(3);
 
+    Node *child4 = new Node(Node::NodeType::Number, "A7a");
+    Node *child5 = new Node(Node::NodeType::Addition, "5555555");
 
     this->root = nroot;
     this->root->addChild(child1);
     this->root->addChild(child2);
     child2->addChild(child3);
+    child2->addChild(child4);
+    child1->addChild(child5);
 }
 
-void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int currentLevel) {
+void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int level) {
     if (!node) return;
 
     // Draw the current node
@@ -47,16 +51,16 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
     painter->setBrush(QColor(70, 130, 180)); // Steel Blue
 
     if (isOval(node->getType())) {
-        painter->drawEllipse(x - 20, y - 20, 40, 40);
+        painter->drawEllipse(x - 20, y - 20, 40, 40); // Node as an oval
     } else {
-        painter->drawRect(x - 40, y - 20, 80, 40);
+        painter->drawRect(x - 40, y - 20, 80, 40);    // Node as a rectangle
     }
 
     // Draw node value
     painter->setPen(Qt::white);
     QString nodeText;
     if (!hasValue(node->getType())) {
-        nodeText = node->getNodeTypeString().toString() + "\n (" + node->getValue() + ")";
+        nodeText = node->getNodeTypeString().toString() + "\n(" + node->getValue() + ")";
     } else {
         nodeText = node->getValue();
     }
@@ -65,10 +69,10 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
 
     if (node->getChildren().empty()) return;
 
-    // Calculate spacing for children
+    // Calculate the total width and starting positions for children
     int childCount = node->getChildren().size();
-    int totalChildWidth = 0;
     std::vector<int> childWidths;
+    int totalChildWidth = 0;
 
     // Calculate width for each child's subtree
     for (Node* child : node->getChildren()) {
@@ -77,10 +81,11 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
         totalChildWidth += childWidth;
     }
 
-    // Determine vertical spacing based on level
-    int verticalSpacing = (currentLevel == 1) ? 0 : 100;
+    // Vertical and horizontal spacing between nodes
+    int verticalSpacing = 100;
+    int horizontalSpacing = 100;
 
-    // Starting x position for first child
+    // Starting X position for the first child node
     int startX = x - totalChildWidth / 2;
 
     // Draw children and their subtrees
@@ -88,14 +93,21 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
         Node* child = node->getChildren()[i];
         int childWidth = childWidths[i];
 
-        // Draw connection line
+        // Calculate position for each child
+        int childX = startX + childWidth / 2;
+        int childY = (child->getLevel() == node->getLevel())? y : y + verticalSpacing;
+
+        // Draw connection line to child node
         painter->setPen(QPen(Qt::black, 2));
-        painter->drawLine(x, y + 20, startX + childWidth/2, y + verticalSpacing);
+        int yLineOffset = (child->getLevel() == node->getLevel())? 0 : 20;
 
-        // Recursive call with updated level
-        drawTree(painter, child, startX + childWidth/2, y + verticalSpacing, childWidth, 1);
+        painter->drawLine(x, y + yLineOffset, childX, childY);
 
-        startX += childWidth;
+        // Recursively draw the child node
+        drawTree(painter, child, childX, childY, childWidth, child->getLevel());
+
+        // Update the starting position for the next child
+        startX += childWidth + horizontalSpacing;
     }
 }
 
@@ -115,5 +127,4 @@ void TreeVisualiser::wheelEvent(QWheelEvent *event)
 
     update(); // Redraw the widget
 }
-
 

@@ -5,6 +5,9 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPainter>
+#include <QQueue>
+#include <QMap>
+
 
 #include "Node.h"
 
@@ -17,6 +20,7 @@ namespace Tiny::Widgets {
         void paintEvent(QPaintEvent *event) override;
        public:
         TreeVisualiser(QWidget *parent = nullptr);
+           void drawTree(QPainter *painter, Node *root);
            void drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int currentLevel);
 
         int calculateTreeWidth(Node* node) {
@@ -57,9 +61,50 @@ namespace Tiny::Widgets {
                 return false;
             }
         }
+
+        void computePositions() {
+            positions.clear();
+            if (!root) return;
+
+            // BFS to gather nodes by level
+            QQueue<Node*> queue;
+            queue.enqueue(root);
+
+            QMap<int, QList<Node*>> levelMap;
+            int maxLevel = 0;
+
+            while (!queue.isEmpty()) {
+                Node* current = queue.dequeue();
+                int lvl = current->getLevel();
+                maxLevel = qMax(maxLevel, lvl);
+                levelMap[lvl].append(current);
+
+                for (Node* child : current->getChildren()) {
+                    queue.enqueue(child);
+                }
+            }
+
+            // Now assign positions level by level
+            int W = width(); // widget width
+            for (int lvl = 0; lvl <= maxLevel; lvl++) {
+                QList<Node*>& nodesAtLevel = levelMap[lvl];
+                int N = nodesAtLevel.size();
+                if (N == 0) continue;
+
+                int spacing = W / (N + 1);
+                int yPos = 50 + lvl * 100; // each level 100px apart vertically
+                for (int i = 0; i < N; i++) {
+                    Node* n = nodesAtLevel[i];
+                    int xPos = spacing * (i + 1);
+                    positions[n] = QPoint(xPos, yPos);
+                }
+            }
+        }
     private:
         Node *root = nullptr;
         qreal zoomFactor = 1.0;
+        QMap<Node*, QPoint> positions;
+
     }; // class TreeVisualiser
 }  // namespace Tiny::Widgets
 

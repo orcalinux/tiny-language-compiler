@@ -40,6 +40,19 @@ Token &Token::operator=(Token &&other)
     return *this;
 }
 
+QStringView Token::getTokenTypeString(TokenType type)
+{
+    size_t index = static_cast<size_t>(type);
+
+    // Ensure the index is valid and within range
+    if (index >= tokenTypeStrings.size()) {
+        throw std::out_of_range("Invalid TokenType index");
+    }
+
+    // Return the string representation of the token type
+    return QStringView(tokenTypeStrings[index].toString());
+}
+
 // Returns the type of the token
 Token::TokenType Token::getType() const {
     return type;
@@ -60,26 +73,13 @@ int Token::getColumn() const {
     return column;
 }
 
-// Converts the token type to its string representation using a lookup table
-QStringView Token::getTokenTypeString() const {
-    size_t index = static_cast<size_t>(type);
-
-    // Ensure the index is valid and within range
-    if (index >= tokenTypeStrings.size()) {
-        throw std::out_of_range("Invalid TokenType index");
-    }
-
-    // Return the string representation of the token type
-    return QStringView(tokenTypeStrings[index].toString());
-}
-
 // Converts the token to a detailed string representation
 QString Token::toString(bool includePosition) const {
     QString str;
     QTextStream stream(&str);
 
     // Include the token type and value
-    stream << value << ", " << getTokenTypeString();
+    stream << value << ", " << getTokenTypeString(type);
 
     // Optionally include the token's line and column positions
     if (includePosition) {
@@ -96,18 +96,23 @@ QString Token::toHTMLString(bool includePosition) const
     QTextStream stream(&str);
 
     // Use light gray for token value
+    if (value == "<"){
+        stream << "<span style='color:#c0c0c0;'>&lt;" << value << "&gt;</span>, ";
+
+    } else {
     stream << "<span style='color:#c0c0c0;'>" << value << "</span>, ";
+    }
 
     // Conditional formatting for token type
     if (type == TokenType::UNKNOWN) {
         // Bright red for unknown type
-        stream << "<span style='color:#ff5555; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+        stream << "<span style='color:#ff5555; font-weight:bold;'>" << getTokenTypeString(type) << "</span>";
     } else if (type != TokenType::NUMBER && type != TokenType::IDENTIFIER && type != TokenType::UNKNOWN) {
         // Light blue for reserved types
-        stream << "<span style='color:#5555ff; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+        stream << "<span style='color:#5555ff; font-weight:bold;'>" << getTokenTypeString(type) << "</span>";
     } else {
         // Default white for known types
-        stream << "<span style='color:#ffffff; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+        stream << "<span style='color:#ffffff; font-weight:bold;'>" << getTokenTypeString(type) << "</span>";
     }
 
     // Optionally include the token's line and column positions

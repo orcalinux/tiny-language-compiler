@@ -168,6 +168,9 @@ void TabContent::textChanged()
         if(!hasUnknown){
             // parse
             // TODO
+            // update the tree visualiser
+            Node* root = new Node(Node::NodeType::Addition, "Addition");
+            this->treeVisualiser->setRoot(root);
         }
     }
 

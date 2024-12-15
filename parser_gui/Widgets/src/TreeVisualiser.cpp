@@ -19,3 +19,8 @@ TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
     // add the label to the layout
     layout->addWidget(label);
 }
+
+void TreeVisualiser::setRoot(Node *root)
+{
+    qDebug() << "Drawing tree";
+}

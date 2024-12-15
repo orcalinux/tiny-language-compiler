@@ -128,11 +128,6 @@ class Token {
 
     // destructor
     ~Token() = default;
-   private:
-    TokenType type; /**< The type of the token */
-    QString value;  /**< The value of the token */
-    int line;       /**< The line number of the token */
-    int column;     /**< The column number of the token */
 
     /**
      * @brief Converts the token type to a string representation.
@@ -141,7 +136,15 @@ class Token {
      *
      * @throws std::out_of_range if the token type is invalid.
      */
-    QStringView getTokenTypeString() const;
+    static QStringView getTokenTypeString(TokenType type);
+
+   private:
+    TokenType type; /**< The type of the token */
+    QString value;  /**< The value of the token */
+    int line;       /**< The line number of the token */
+    int column;     /**< The column number of the token */
+
+
 
     /**
      * @brief Static constexpr lookup table for token type string representations.

@@ -43,14 +43,14 @@ Node *Node::getParent() const
     return parent;
 }
 
-QList<Node *> Node::getSiblings() const
-{
-    return siblings;
-}
-
 QList<Node *> Node::getChildren() const
 {
     return children;
+}
+
+int Node::getLevel() const
+{
+    return level;
 }
 
 void Node::setValue(QString value)
@@ -66,17 +66,18 @@ void Node::setType(NodeType type)
 void Node::setParent(Node *parent)
 {
     this->parent = parent;
+    parent->addChild(this);
+}
+
+void Node::setLevel(int level)
+{
+    this->level = level;
 }
 
 void Node::addChild(Node *child)
 {
     this->children.append(child);
-}
-
-void Node::addSibling(Node *sibling)
-{
-    this->siblings.append(sibling);
-    sibling->addSibling(this);
+    child->setParent(this);
 }
 
 void Node::printTree(int depth) const

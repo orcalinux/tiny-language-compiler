@@ -7,12 +7,14 @@
 
 #include "Node.h"
 
+using namespace Tiny::Data;
 namespace Tiny::Widgets {
     class TreeVisualiser : public QWidget {
         Q_OBJECT
        public:
         TreeVisualiser(QWidget *parent = nullptr);
-        void drawTree(Node* root);
+        void setRoot(Node* root);
+
 
     }; // class TreeVisualiser
 }  // namespace Tiny::Widgets

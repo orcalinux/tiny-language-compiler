@@ -40,19 +40,17 @@ public:
     NodeType getType() const;
     QStringView getNodeTypeString() const;
     Node *getParent() const;
-    QList<Node *> getSiblings() const;
     QList<Node *> getChildren() const;
+    int getLevel() const;
 
     // setters
     void setValue(QString value);
     void setType(NodeType type);
     void setParent(Node *parent);
+    void setLevel(int level);
 
     // add children
     void addChild(Node *child);
-
-    // add siblings
-    void addSibling(Node *sibling);
 
     // print tree
     void printTree(int depth = 0) const;
@@ -61,9 +59,8 @@ private:
     QString value;
     NodeType type;
     Node *parent;
-    QList<Node *> siblings;
     QList<Node *> children;
-
+    int level;
 
 
 

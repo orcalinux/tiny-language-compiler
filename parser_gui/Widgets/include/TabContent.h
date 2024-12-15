@@ -38,6 +38,7 @@ public:
 
     bool getIsTokenOnly() const;
     bool getIsTokenShowed() const;
+    QList<QPair<Token,QString>> parseErrors;
 
 public slots:
     void showTokens();
@@ -75,6 +76,7 @@ private:
 
     bool processUnknownTokens();
     void processReservedTokens();
+
 };
 
 } // namespace Tiny::Widgets

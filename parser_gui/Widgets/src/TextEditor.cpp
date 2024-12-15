@@ -102,6 +102,44 @@ void TextEditor::resetFormat()
     this->blockSignals(false);
 }
 
+void TextEditor::markParseError(int line, int column, int charCount, QString message)
+{
+    this->blockSignals(true);
+
+    // Create a QTextCursor to navigate the document
+    QTextCursor cursor = this->textCursor();
+
+    // Get the block (line) based on the 1-based line number
+    QTextBlock block = this->document()->findBlockByLineNumber(line - 1);
+    if (!block.isValid()) {
+        qWarning() << "Invalid line number:" << line;
+        return;
+    }
+
+    // Calculate the position in the block (column is 1-based)
+    int position = block.position() + (column - 1);
+
+    // Set the cursor to the starting position
+    cursor.setPosition(position);
+
+    // Select the characters to mark by moving the cursor to the end of the selection range (left)
+    cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, charCount);
+
+    // Create the format for marking
+    QTextCharFormat format;
+    format.setForeground(QColor("orange") ); // Text color: orange
+    format.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline); // Zigzag underline
+    format.setToolTip(message);
+
+    // Apply the format to the selected text only
+    cursor.setCharFormat(format);
+
+    // Clear the selection to avoid further changes
+    cursor.clearSelection();
+
+    this->blockSignals(false); // Re-enable signals after formatting
+}
+
 void TextEditor::initStyle()
 {
     // set the style

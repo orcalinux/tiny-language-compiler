@@ -113,6 +113,20 @@ class Token {
 
     QString toHTMLString(bool includePosition = false) const;
 
+    void setType(QString type){
+        // loop over the token type strings
+        for (size_t i = 0; i < tokenTypeStrings.size(); i++) {
+            // check if the type string matches
+            if (type == tokenTypeStrings[i]) {
+                // set the type
+                this->type = static_cast<TokenType>(i);
+                return;
+            }
+        }
+    }
+    void setValue(QString value){
+        this->value = value;
+    }
 
     // copy constructor
     Token(const Token &other) = default;

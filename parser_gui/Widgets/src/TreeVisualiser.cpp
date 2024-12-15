@@ -3,6 +3,7 @@
 #include <QWheelEvent>
 
 using Tiny::Widgets::TreeVisualiser;
+using Tiny::Data::Node;
 
 void TreeVisualiser::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
@@ -25,7 +26,7 @@ TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
 
 }
 
-void TreeVisualiser::drawTree(QPainter *painter, Node *node)
+void TreeVisualiser::drawTree(QPainter* painter, Node *node)
 {
     if (!node) return;
 
@@ -56,10 +57,13 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node)
     painter->setPen(QPen(Qt::black, 2));
     for (Node* child : node->getChildren()) {
         QPoint childPos = positions[child];
-        painter->drawLine(pos.x(), pos.y() + 20, childPos.x(), childPos.y() - 20);
+        if (child->getLevel() == node->getLevel()) {
+            painter->drawLine(pos.x() + 40, pos.y(), childPos.x(), childPos.y());
+        } else {
+            painter->drawLine(pos.x(), pos.y() + 20, childPos.x(), childPos.y() - 20);
+        }
         drawTree(painter, child); // Recursively draw children
     }
-
 }
 
 void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int level) {

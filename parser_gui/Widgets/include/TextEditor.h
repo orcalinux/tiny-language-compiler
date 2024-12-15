@@ -19,6 +19,7 @@ namespace Tiny::Widgets {
         void markUnknowTokens(int line, int column, int charCount);
         void markReservedToken(int line, int column, int charCount);
         void resetFormat();
+        void markParseError(int line, int column, int charCount, QString message);
        signals:
 
        public slots:

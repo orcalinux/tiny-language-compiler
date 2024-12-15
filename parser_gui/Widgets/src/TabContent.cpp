@@ -22,6 +22,8 @@ TabContent::TabContent(bool tokenTextOnly, bool newFile, QWidget *parent) :
     initStyle();
     initConfig();
 
+    this->parseErrors = QVector<QPair<Tiny::Data::Token, QString>>();
+
     // if not a new file, load the file
     if (!newFile) {
         // load the file
@@ -54,7 +56,10 @@ TabContent::TabContent(bool tokenTextOnly, bool newFile, QWidget *parent) :
     connect(parser, &Parser::error, this, [this](Tiny::Data::Token token, QString message) {
         // show the error
         // TODO
-        //qDebug() << message;
+        qDebug() << message;
+        // append the error
+        this->parseErrors.append({token, message});
+
     });
 }
 
@@ -132,23 +137,59 @@ void TabContent::saveAsFile()
 
 void TabContent::textChanged()
 {
-    // skip the next text change
-    if (skipNextTextChange) {
-        skipNextTextChange = false;
-        return;
-    }
-
-    // token only mode
+    // Token-only mode
     if (isTokenOnly) {
-        // get the new tokens
-        tokenText = textEditor->toPlainText();
+        // Get the new tokens from the text editor
+        QString tokenText = textEditor->toPlainText();
         qDebug() << "Tokens: " << tokenText;
 
-        // parse and update the tree visualiser
-        // TODO
+        // Tokens are expected in the format: type, value
+        QStringList lines = tokenText.split("\n", Qt::SkipEmptyParts); // Skip empty lines
+        tokensList.clear(); // Clear the existing tokens list
+
+        // Loop over each line and process tokens
+        for (const QString& line : lines) {
+            QStringList tokenParts = line.split(",", Qt::SkipEmptyParts);
+            if (tokenParts.size() != 2) {
+                qDebug() << "Invalid token format: " << line;
+                continue; // Skip invalid lines
+            }
+
+            QString type = tokenParts[0].trimmed();
+            QString value = tokenParts[1].trimmed();
+
+            Tiny::Data::Token token(Tiny::Data::Token::TokenType::ASSIGN, value, 0, 0); // Line and column default to 0
+            token.setType(type);
+            tokensList.append(token);
+        }
+
+        // Parse the tokens
+        if (tokensList.isEmpty()) {
+            this->treeVisualiser->setRoot(nullptr); // Clear the tree if no tokens
+            return;
+        }
+
+        this->parser->setTokens(tokensList);
+        Node* root = nullptr;
+
+        try {
+            this->parseErrors.clear(); // Clear any previous parse errors
+            root = this->parser->parse();
+        } catch (const std::exception& e) {
+            qDebug() << "Parser exception: " << e.what();
+        } catch (...) {
+            qDebug() << "An unknown exception occurred during parsing.";
+        }
+
+        // Handle parse errors
+        for (const auto& error : this->parseErrors) {
+            qDebug() << "Parse error:" << error.first.getValue() << error.second;
+            this->textEditor->markParseError(error.first.getLine(), error.first.getColumn(), error.first.getValue().length(), error.second);
+        }
+
+        // Update the tree visualizer
+        this->treeVisualiser->setRoot(root ? root : nullptr);
     }
-
-
     // text mode
     else {
         // get the new text
@@ -175,18 +216,25 @@ void TabContent::textChanged()
         processReservedTokens();
 
         if(!hasUnknown){
-            static int counter;
             // parse
             this->parser->setTokens(tokensList);
             Node* root = nullptr;
             try {
-                qDebug() << "Parsing..." + QString::number(counter++);
+                // reset errors list
+                this->parseErrors.clear();
                 root = this->parser->parse();
             } catch (const std::exception& e) {
                 // qDebug() << e.what();
             } catch (...) {
                 qDebug() << "An unknown exception occurred";
             }
+
+            // parse errors
+            for (const auto& error : this->parseErrors) {
+                qDebug() << error.first.getValue() << " " << error.second;
+                this->textEditor->markParseError(error.first.getLine(), error.first.getColumn(), error.first.getValue().length(), error.second);
+            }
+
 
             // update the tree visualiser
             if (root != nullptr) {

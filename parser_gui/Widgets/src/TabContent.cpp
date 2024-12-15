@@ -4,6 +4,7 @@ using Tiny::Widgets::TabContent;
 using Tiny::Widgets::TextEditor;
 using Tiny::Widgets::TreeVisualiser;
 using Tiny::Scanner::Scanner;
+using Tiny::Parser::Parser;
 using Tiny::Scanner::TokenStreamBuilder;
 
 
@@ -44,6 +45,17 @@ TabContent::TabContent(bool tokenTextOnly, bool newFile, QWidget *parent) :
     // get the tokens
     tokenStreamBuilder->build();
     tokensList = tokenStreamBuilder->getTokens();
+
+    // init the parser
+    parser = new Parser(this);
+    parser->setTokens(tokensList);
+    parser->parse();
+
+    connect(parser, &Parser::error, this, [this](QString message) {
+        // show the error
+        // TODO
+        //qDebug() << message;
+    });
 }
 
 TabContent::~TabContent()
@@ -158,19 +170,28 @@ void TabContent::textChanged()
             tokenText += token.toHTMLString(true) + "<br>";
         }
 
-        // Debug output (HTML will appear as plain text in qDebug)
-        qDebug() << "Tokens (HTML): " << tokenText;
-
         // mark the unknown tokens
         bool hasUnknown = processUnknownTokens();
         processReservedTokens();
 
         if(!hasUnknown){
+            static int counter;
             // parse
-            // TODO
+            this->parser->setTokens(tokensList);
+            Node* root = nullptr;
+            try {
+                qDebug() << "Parsing..." + QString::number(counter++);
+                root = this->parser->parse();
+            } catch (const std::exception& e) {
+                // qDebug() << e.what();
+            } catch (...) {
+                qDebug() << "An unknown exception occurred";
+            }
+
             // update the tree visualiser
-            Node* root = new Node(Node::NodeType::Addition, "Addition");
-            this->treeVisualiser->setRoot(root);
+            if (root != nullptr) {
+                this->treeVisualiser->setRoot(root);
+            }
         }
     }
 

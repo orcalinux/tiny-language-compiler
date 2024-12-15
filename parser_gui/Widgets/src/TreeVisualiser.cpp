@@ -113,6 +113,7 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
 
 void TreeVisualiser::wheelEvent(QWheelEvent *event)
 {
+
     const qreal zoomStep = 0.1;   // Amount to zoom in/out
     const qreal minZoom = 0.5;   // Minimum zoom level
     const qreal maxZoom = 3.0;   // Maximum zoom level

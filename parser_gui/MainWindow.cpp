@@ -43,4 +43,7 @@ void MainWindow::initTabWidget() {
     // connect tolbar buttons to tab widget slots
     connect(toolbar, &Tiny::Widgets::ToolBar::newTextTab, tabWidget, &Tiny::Widgets::TabWidget::newTextTab);
     connect(toolbar, &Tiny::Widgets::ToolBar::newTokensTab, tabWidget, &Tiny::Widgets::TabWidget::newTokensTab);
+
+    // set the toolbar in the tab widget
+    tabWidget->setToolBar(toolbar);
 }

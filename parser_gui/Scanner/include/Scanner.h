@@ -61,6 +61,7 @@ public:
      */
     bool hasMoreTokens();
 
+    void setInput(const QString &input);
 private:
     QString input;     /**< The source code to be tokenized. */
     size_t pos = 0;    /**< Current position in the input string. */

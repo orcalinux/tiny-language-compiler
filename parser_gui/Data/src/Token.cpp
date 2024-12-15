@@ -90,4 +90,32 @@ QString Token::toString(bool includePosition) const {
     return str;
 }
 
+QString Token::toHTMLString(bool includePosition) const
+{
+    QString str;
+    QTextStream stream(&str);
+
+    // Use light gray for token value
+    stream << "<span style='color:#c0c0c0;'>" << value << "</span>, ";
+
+    // Conditional formatting for token type
+    if (type == TokenType::UNKNOWN) {
+        // Bright red for unknown type
+        stream << "<span style='color:#ff5555; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+    } else if (type != TokenType::NUMBER && type != TokenType::IDENTIFIER && type != TokenType::UNKNOWN) {
+        // Light blue for reserved types
+        stream << "<span style='color:#5555ff; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+    } else {
+        // Default white for known types
+        stream << "<span style='color:#ffffff; font-weight:bold;'>" << getTokenTypeString() << "</span>";
+    }
+
+    // Optionally include the token's line and column positions
+    if (includePosition) {
+        stream << " <span style='color:#ff9900;'>[Line: " << line << ", Column: " << column << "]</span>";
+    }
+
+    return str;
+}
+
 }  // namespace Tiny::Data

@@ -96,7 +96,8 @@ Token Scanner::getNextToken()
             return Token(Token::TokenType::READ, identifier, line, column);
         if (identifier == "write")
             return Token(Token::TokenType::WRITE, identifier, line, column);
-
+        if (identifier == "else")
+            return Token(Token::TokenType::ELSE, identifier, line, column);
         // If not a keyword, it's an identifier
         return Token(Token::TokenType::IDENTIFIER, identifier, line, column);
     }
@@ -139,6 +140,15 @@ bool Scanner::hasMoreTokens()
     column = tempColumn;
 
     return hasMore;
+}
+
+void Scanner::setInput(const QString &input)
+{
+    // reset the scanner state
+    this->input = input;
+    pos = 0;
+    line = 1;
+    column = 1;
 }
 
 QChar Scanner::peek() const

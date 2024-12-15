@@ -41,6 +41,7 @@ class Token {
     enum class TokenType {
         IF,            /**< "if" keyword */
         THEN,          /**< "then" keyword */
+        ELSE,          /**< "else" keyword */
         END,           /**< "end" keyword */
         REPEAT,        /**< "repeat" keyword */
         UNTIL,         /**< "until" keyword */
@@ -110,6 +111,8 @@ class Token {
      */
     QString toString(bool includePosition = false) const;
 
+    QString toHTMLString(bool includePosition = false) const;
+
 
     // copy constructor
     Token(const Token &other) = default;
@@ -146,9 +149,10 @@ class Token {
      * This table maps each TokenType enum value to its corresponding string
      * representation for use in debugging and output.
      */
-    static constexpr std::array<QLatin1StringView, 20> tokenTypeStrings = {
+    static constexpr std::array<QLatin1StringView, 21> tokenTypeStrings = {
         QLatin1StringView("IF"),            /**< "if" keyword */
         QLatin1StringView("THEN"),          /**< "then" keyword */
+        QLatin1StringView("ELSE"),          /**< "else" keyword */
         QLatin1StringView("END"),           /**< "end" keyword */
         QLatin1StringView("REPEAT"),        /**< "repeat" keyword */
         QLatin1StringView("UNTIL"),         /**< "until" keyword */

@@ -7,6 +7,10 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <QTabBar>
+
+#include "TabContent.h"
+#include "ToolBar.h"
 
 namespace Tiny::Widgets {
 
@@ -15,6 +19,7 @@ class TabWidget : public QTabWidget {
    public:
     explicit TabWidget(QWidget* parent = nullptr);
 
+       void setToolBar(ToolBar* toolbar);
    signals:
 
    public slots:
@@ -30,6 +35,9 @@ class TabWidget : public QTabWidget {
     QWidget* defaultTab;
     size_t counter = 0;
 
+    ToolBar* toolbar;
+
+
     void initStyle();
     void initConfig();
 
@@ -37,6 +45,8 @@ class TabWidget : public QTabWidget {
 
     void defaultTabLayout();
     void createDefaultTab();
+
+    void connectCurrentTabSignals();
 
    private slots:
     void closeTab(int index);

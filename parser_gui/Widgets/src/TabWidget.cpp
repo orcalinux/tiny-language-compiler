@@ -9,9 +9,6 @@ TabWidget::TabWidget(QWidget* parent)
 
     putDefaultTab();
 
-    // add a tab and remove the default tab
-    addTab(new QWidget(), "New Tab");
-    removeTab(0);
     // set the tab tool tip
     setTabToolTip(0, "New Tab");
     // set the close and move actions
@@ -20,6 +17,17 @@ TabWidget::TabWidget(QWidget* parent)
 
     // connect the tab close signal
     connect(this, &TabWidget::tabCloseRequested, this, &TabWidget::closeTab);
+
+    // connect the current changed signal with a lambda function
+    connect(this, &TabWidget::currentChanged, [this](int index) {
+        connectCurrentTabSignals();
+    });
+}
+
+void TabWidget::setToolBar(ToolBar *toolbar)
+{
+    this->toolbar = toolbar;
+    connectCurrentTabSignals();
 }
 
 void TabWidget::addTabRequest(bool tokenOnly) {
@@ -31,21 +39,13 @@ void TabWidget::addTabRequest(bool tokenOnly) {
         // set close and move actions
         setTabsClosable(true);
         setMovable(true);
+
+        // show the tab bar
+        tabBar()->show();
     }
 
-    QWidget* newTab = new QWidget(this);
-    QVBoxLayout* layout = new QVBoxLayout();
-    newTab->setLayout(layout);
-
-    // add a label for the type
-    QLabel* typeLabel = new QLabel(tokenOnly ? "Tokens" : "Text");
-
-    // set the label style
-    typeLabel->setAlignment(Qt::AlignCenter);
-    typeLabel->setStyleSheet("font-size: 20px; color: #c0c0c0;");
-
-    // add the label to the layout
-    layout->addWidget(typeLabel);
+    // create a new tab
+    TabContent* newTab = new TabContent(tokenOnly, true, this);
 
     // add the new tab
     addTab(newTab, (tokenOnly ? "Tokens" : "Text") + QString::number(counter));
@@ -54,6 +54,9 @@ void TabWidget::addTabRequest(bool tokenOnly) {
     setTabToolTip(count() - 1, (tokenOnly ? "Tokens" : "Text") + QString::number(counter));
 
     counter++;
+
+    connectCurrentTabSignals();
+
 }
 
 void TabWidget::newTextTab() {
@@ -129,6 +132,9 @@ void TabWidget::putDefaultTab() {
         // set the tab tool tip
         setTabToolTip(0, "Welcome");
         setMovable(false);
+
+        // hide the tab bar
+        tabBar()->hide();
     }
 }
 
@@ -205,6 +211,67 @@ void Tiny::Widgets::TabWidget::defaultTabLayout() {
 void TabWidget::createDefaultTab() {
     defaultTab = new QWidget(this);
     defaultTabLayout();
+}
+
+void TabWidget::connectCurrentTabSignals()
+{
+    // if default tab, return
+    QWidget* currentTab = currentWidget();
+    if (currentTab == defaultTab) {
+        // disconnect the showText and showTokens signals
+        disconnect(this->toolbar, &ToolBar::showText, nullptr, nullptr);
+        disconnect(this->toolbar, &ToolBar::showTokens, nullptr, nullptr);
+
+        // unchecked the view text and view tokens actions
+        this->toolbar->setActionChecked(ToolBar::ActionName::ViewTextFile, false);
+        this->toolbar->setActionChecked(ToolBar::ActionName::ViewTokens, false);
+
+        // disable the view text and view tokens actions
+        this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTextFile, false);
+        this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTokens, false);
+        return;
+    }
+
+    // enable the view text and view tokens actions
+    this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTextFile, true);
+    this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTokens, true);
+
+    if (currentTab == nullptr) {
+        return;
+    }
+
+    // disconnect the showText and showTokens signals
+    disconnect(this->toolbar, &ToolBar::showText, nullptr, nullptr);
+    disconnect(this->toolbar, &ToolBar::showTokens, nullptr, nullptr);
+
+    // cast the current tab to TabContent
+    TabContent* currentContentTab = qobject_cast<TabContent*>(currentTab);
+
+    if (currentContentTab == nullptr) {
+        return;
+    }
+
+    // connect the showText and showTokens signals to the current tab
+    connect(this->toolbar, &ToolBar::showText, currentContentTab, &TabContent::showText);
+    connect(this->toolbar, &ToolBar::showTokens, currentContentTab, &TabContent::showTokens);
+
+    // if the current conten tab accept only tokens, hide the showText action
+    if(currentContentTab->getIsTokenOnly()){
+        this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTextFile, false);
+        if (currentContentTab->getIsTokenShowed()){
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTextFile, false);
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTokens, true);
+        }
+    } else {
+        this->toolbar->setActionEnabled(ToolBar::ActionName::ViewTextFile, true);
+        if (currentContentTab->getIsTokenShowed()){
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTextFile, false);
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTokens, true);
+        } else {
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTextFile, true);
+            this->toolbar->setActionChecked(ToolBar::ActionName::ViewTokens, false);
+        }
+    }
 }
 
 void TabWidget::closeTab(int index) {

@@ -28,6 +28,26 @@ ToolBar::~ToolBar() {
     }
 }
 
+void ToolBar::setActionChecked(ActionName name, bool checked)
+{
+    for (auto action : actions) {
+        if (actionNameToString[name] == action->text()) {
+            action->setChecked(checked);
+            return;
+        }
+    }
+}
+
+void ToolBar::setActionEnabled(ActionName name, bool enabled)
+{
+    for (auto action : actions) {
+        if (actionNameToString[name] == action->text()) {
+            action->setEnabled(enabled);
+            return;
+        }
+    }
+}
+
 void ToolBar::initFileActions() {
     // new text file action
     Action* newFileTextAction = new Action();
@@ -83,25 +103,32 @@ void ToolBar::initFileActions() {
 }
 
 void ToolBar::initViewActions() {
+    QActionGroup* viewGroup = new QActionGroup(this);
+    viewGroup->setExclusive(true);
+
     // view text
     Action* viewTextAction = new Action();
     viewTextAction->name = ActionName::ViewTextFile;
     viewTextAction->statusTip = "View the text file";
     viewTextAction->shortcut = QKeySequence("Ctrl+Shift+T");
-    viewTextAction->slot = []() {
+    viewTextAction->slot = [this]() {
         qDebug() << "View text";
+        emit showText();
     };
-    addToolbarAction(viewTextAction, true, true);
+    QAction* textAction = addToolbarAction(viewTextAction, true, true);
+    viewGroup->addAction(textAction);
 
     // view tokens
     Action* viewTokensAction = new Action();
     viewTokensAction->name = ActionName::ViewTokens;
     viewTokensAction->statusTip = "View the tokens file";
     viewTokensAction->shortcut = QKeySequence("Ctrl+Shift+K");
-    viewTokensAction->slot = []() {
+    viewTokensAction->slot = [this]() {
         qDebug() << "View tokens";
+        emit showTokens();
     };
-    addToolbarAction(viewTokensAction, true, false);
+    QAction* tokensAction =  addToolbarAction(viewTokensAction, true, false);
+    viewGroup->addAction(tokensAction);
 
     addSeparator();
 
@@ -148,7 +175,7 @@ void ToolBar::initHelpActions() {
     addToolbarAction(aboutAction);
 }
 
-void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefault) {
+QAction* ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefault) {
     QString actionName = actionNameToString[action->name];
     // load icon, it has the same name as the action
     QIcon icon(QString(":/resources/%1.png").arg(actionName));
@@ -189,6 +216,8 @@ void ToolBar::addToolbarAction(Action* action, bool onOffAction, bool onByDefaul
 
     // add the action to the actions map
     this->actions.append(newAction);
+
+    return newAction;
 }
 
 void ToolBar::initStyle() {

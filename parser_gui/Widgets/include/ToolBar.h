@@ -8,6 +8,7 @@
 #include <QToolBar>
 #include <QVector>
 #include <functional>
+#include <QActionGroup>
 
 namespace Tiny::Widgets {
 
@@ -31,9 +32,9 @@ class ToolBar : public QToolBar {
     explicit ToolBar(QWidget* parent = nullptr);
     ~ToolBar();
 
-    QAction* getAction(const QString& name);
-    void setActionEnabled(const QString& name, bool enabled);
-    void setActionVisible(const QString& name, bool visible);
+    QAction* getAction(ActionName name);
+    void setActionChecked(ActionName name, bool checked);
+    void setActionEnabled(ActionName name, bool enabled);
 
    private:
     QVector<QAction*> actions;
@@ -48,7 +49,7 @@ class ToolBar : public QToolBar {
         QKeySequence shortcut;
         std::function<void()> slot;
     };
-    void addToolbarAction(Action* action, bool onOffAction = false, bool onByDefault = false);
+    QAction* addToolbarAction(Action* action, bool onOffAction = false, bool onByDefault = false);
 
     void initStyle();
 
@@ -60,6 +61,9 @@ class ToolBar : public QToolBar {
    signals:
     void newTextTab();
     void newTokensTab();
+
+    void showTokens();
+    void showText();
 
 };  // class ToolBar
 }  // namespace Tiny::Widgets

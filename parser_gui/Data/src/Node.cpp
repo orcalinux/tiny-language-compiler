@@ -2,9 +2,14 @@
 
 using namespace Tiny::Data;
 
-Node::Node(NodeType type, QString value, Node *parent)
-: type(type), value(value), parent(parent)
-{}
+Node::Node(NodeType type)
+: type(type)
+{
+    this->value = "";
+    this->parent = nullptr;
+    this->level = 0;
+    this->children = QList<Node*>();
+}
 
 Node::~Node()
 {
@@ -66,7 +71,6 @@ void Node::setType(NodeType type)
 void Node::setParent(Node *parent)
 {
     this->parent = parent;
-    parent->addChild(this);
 }
 
 void Node::setLevel(int level)
@@ -77,12 +81,11 @@ void Node::setLevel(int level)
 void Node::addChild(Node *child)
 {
     this->children.append(child);
-    child->setParent(this);
 }
 
 void Node::printTree(int depth) const
 {
-    qDebug().noquote() << QString(depth * 2, ' ') << this->getNodeTypeString() << ": " << value;
+    qDebug().noquote() << QString(depth * 2, ' ') << this->getNodeTypeString() << ": " << value << " level: " << level;
     for (auto child : children)
     {
         child->printTree(depth + 1);

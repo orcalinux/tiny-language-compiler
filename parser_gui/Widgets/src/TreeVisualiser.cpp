@@ -23,4 +23,6 @@ TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
 void TreeVisualiser::setRoot(Node *root)
 {
     qDebug() << "Drawing tree";
+    // print the tree
+    root->printTree();
 }

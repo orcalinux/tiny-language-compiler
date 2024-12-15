@@ -38,7 +38,6 @@ namespace Tiny::Widgets {
         bool isOval(Node::NodeType type) {
             if ((type == Node::NodeType::Identifier) ||
                 (type == Node::NodeType::Number) ||
-                (type == Node::NodeType::Addition) ||
                 (type == Node::NodeType::Comparison)) {
                 return true;
             } else {

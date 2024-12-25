@@ -1,42 +1,67 @@
-# Makefile
-
-# Compiler and flags
+# Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iscanner/include -Iparser/include
+CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
 
 # Directories
-SCANNER_SRCDIR = scanner/src
-PARSER_SRCDIR = parser/src
-BUILDDIR = build
+SRCDIR = src
+INCDIR = include
+OBJDIR = obj
 BINDIR = bin
 
-# Source files
-SCANNER_SOURCES = $(wildcard $(SCANNER_SRCDIR)/*.cpp)
-PARSER_SOURCES = $(wildcard $(PARSER_SRCDIR)/*.cpp)
+# Source and Object Files
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+MAIN_SRC = main.cpp
+MAIN_OBJ = $(OBJDIR)/main.o
 
-# Object files
-SCANNER_OBJECTS = $(patsubst $(SCANNER_SRCDIR)/%.cpp, $(BUILDDIR)/scanner/%.o, $(SCANNER_SOURCES))
-PARSER_OBJECTS = $(patsubst $(PARSER_SRCDIR)/%.cpp, $(BUILDDIR)/parser/%.o, $(PARSER_SOURCES))
-OBJECTS = $(SCANNER_OBJECTS) $(PARSER_OBJECTS)
+# Target Executable
+TARGET = $(BINDIR)/tiny-parser
 
-# Target executable
-TARGET = $(BINDIR)/tiny_parser
+# Phony Targets
+.PHONY: all clean directories help run
 
-all: $(TARGET)
+# Default Target
+all: directories $(TARGET)
 
-$(TARGET): $(OBJECTS)
-	@mkdir -p $(BINDIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+# Rule to Create Necessary Directories
+directories:
+	@mkdir -p $(OBJDIR) $(BINDIR)
 
-$(BUILDDIR)/scanner/%.o: $(SCANNER_SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
+# Linking the Target Executable
+$(TARGET): $(MAIN_OBJ) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compiling main.cpp into Object File
+$(MAIN_OBJ): $(MAIN_SRC) $(INCDIR)/parser.hpp $(INCDIR)/token.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILDDIR)/parser/%.o: $(PARSER_SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
+# Compiling Source Files into Object Files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Run the Parser
+run: all
+	@echo "Running the parser..."
+	@./$(TARGET)
+
+# Help Target
+help:
+	@echo "========================================"
+	@echo "          Makefile Help Menu            "
+	@echo "========================================"
+	@echo "Available Targets:"
+	@echo "  all       Build the project."
+	@echo "  run       Build and run the parser."
+	@echo "  clean     Remove build artifacts."
+	@echo "  help      Show this help message."
+	@echo ""
+	@echo "Usage Examples:"
+	@echo "  make        # Builds the project."
+	@echo "  make run    # Builds and runs the parser."
+	@echo "  make clean  # Cleans all build artifacts."
+	@echo "  make help   # Displays this help menu."
+	@echo "========================================"
+
+# Clean Target to Remove Build Artifacts
 clean:
-	rm -rf $(BUILDDIR) $(BINDIR)
-
-.PHONY: all clean
+	rm -rf $(OBJDIR) $(BINDIR)

@@ -1,6 +1,6 @@
 # Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
+CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g -MMD -MP
 
 # Directories
 SRCDIR = src
@@ -11,14 +11,12 @@ BINDIR = bin
 # Source and Object Files
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
-MAIN_SRC = main.cpp
-MAIN_OBJ = $(OBJDIR)/main.o
 
 # Target Executable
 TARGET = $(BINDIR)/tiny-parser
 
 # Phony Targets
-.PHONY: all clean directories help run
+.PHONY: all clean directories help run test
 
 # Default Target
 all: directories $(TARGET)
@@ -28,16 +26,15 @@ directories:
 	@mkdir -p $(OBJDIR) $(BINDIR)
 
 # Linking the Target Executable
-$(TARGET): $(MAIN_OBJ) $(OBJS)
+$(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compiling main.cpp into Object File
-$(MAIN_OBJ): $(MAIN_SRC) $(INCDIR)/parser.hpp $(INCDIR)/token.hpp
+# Compiling Source Files into Object Files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Compiling Source Files into Object Files
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Include dependency files
+-include $(OBJS:.o=.d)
 
 # Run the Parser
 run: all

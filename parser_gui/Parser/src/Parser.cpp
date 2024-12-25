@@ -26,19 +26,34 @@ Node *Parser::parse()
         return nullptr;
     }
 
-    return parseStmtSequence();
+    Node* root = parseStmtSequence();
+
+    if(root != nullptr && tokenIterator.hasNext())
+    {
+        emit error(tokenIterator.peekNext(), "In parse(): Unexpected tokens after the end of the program");
+
+        throw std::invalid_argument("In parse(): Unexpected tokens after the end of the program");
+    }
+
+    return root;
 }
 
 void Parser::match(Data::Token::TokenType expectedType)
 {
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In match(): Unexpected end of file");
+
         throw std::out_of_range("In match(): Unexpected end of file while expecting " + Token::getTokenTypeString(expectedType).toString().toStdString());
     }
 
     Data::Token currentToken = tokenIterator.next();
     if(currentToken.getType() != expectedType)
     {
+        // emit error with the current token
+        emit error(currentToken, "In match(): Expected " + Token::getTokenTypeString(expectedType).toString());
+
         throw std::invalid_argument("In match(): Expected " +
                                     Token::getTokenTypeString(expectedType).toString().toStdString() +
                                     " but got " +
@@ -64,6 +79,9 @@ Node *Parser::parseStmtSequence()
     // parseStmtSequence rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseStmtSequence(): Unexpected end of file");
+
         throw std::out_of_range("In parseStmtSequence(): Unexpected end of file");
     }
 
@@ -90,6 +108,9 @@ Node *Parser::parseStatement()
     // parseStatement rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseStatement(): Unexpected end of file");
+
         throw std::out_of_range("In parseStatement(): Unexpected end of file");
     }
 
@@ -106,6 +127,9 @@ Node *Parser::parseStatement()
     case Token::TokenType::WRITE:
         return parseWriteStatement();
     default:
+        // emit error with the current token
+        emit error(tokenIterator.peekNext(), "In parseStatement(): Unexpected token");
+
         throw std::invalid_argument("In parseStatement(): Unexpected token: " +
                                     tokenIterator.peekNext().getValue().toStdString() +
                                     " of type " +
@@ -118,6 +142,9 @@ Node *Parser::parseIfStatement()
     // parseIfStatement rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseIfStatement(): Unexpected end of file");
+
         throw std::out_of_range("In parseIfStatement(): Unexpected end of file");
     }
 
@@ -182,6 +209,9 @@ Node *Parser::parseAssignStatement()
     // parseAssignStatement rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseAssignStatement(): Unexpected end of file");
+
         throw std::out_of_range("In parseAssignStatement(): Unexpected end of file");
     }
 
@@ -210,6 +240,9 @@ Node *Parser::parseReadStatement()
 
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseReadStatement(): Unexpected end of file");
+
         throw std::out_of_range("In parseReadStatement(): Unexpected end of file expecting IDENTIFIER");
     }
 
@@ -303,12 +336,18 @@ Node *Parser::parseComparisonOp()
     // parseComparisonOp rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseComparisonOp(): Unexpected end of file");
+
         throw std::out_of_range("In parseComparisonOp(): Unexpected end of file");
     }
 
     Token::TokenType t = tokenIterator.peekNext().getType();
     if(t != Token::TokenType::LESSTHAN && t != Token::TokenType::EQUAL)
     {
+        // emit error with the current token
+        emit error(tokenIterator.peekNext(), "In parseComparisonOp(): Unexpected token");
+
         throw std::invalid_argument("In parseComparisonOp(): Unexpected token: " +
                                     tokenIterator.peekNext().getValue().toStdString() +
                                     " of type " +
@@ -336,12 +375,18 @@ Node *Parser::parseAddop()
     // parseAddop rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseAddop(): Unexpected end of file");
+
         throw std::out_of_range("In parseAddop(): Unexpected end of file");
     }
 
     Token::TokenType t = tokenIterator.peekNext().getType();
     if(t != Token::TokenType::PLUS && t != Token::TokenType::MINUS)
     {
+        // emit error with the current token
+        emit error(tokenIterator.peekNext(), "In parseAddop(): Unexpected token");
+
         throw std::invalid_argument("In parseAddop(): Unexpected token: " +
                                     tokenIterator.peekNext().getValue().toStdString() +
                                     " of type " +
@@ -405,12 +450,18 @@ Node *Parser::parseMulop()
     // parseMulop rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseMulop(): Unexpected end of file");
+
         throw std::out_of_range("In parseMulop(): Unexpected end of file");
     }
 
     Token::TokenType t = tokenIterator.peekNext().getType();
     if(t != Token::TokenType::MULT && t != Token::TokenType::DIV)
     {
+        // emit error with the current token
+        emit error(tokenIterator.peekNext(), "In parseMulop(): Unexpected token");
+
         throw std::invalid_argument("In parseMulop(): Unexpected token: " +
                                     tokenIterator.peekNext().getValue().toStdString() +
                                     " of type " +
@@ -438,6 +489,9 @@ Node *Parser::parseFactor()
     // parseFactor rule
     if(!tokenIterator.hasNext())
     {
+        // emit error with the last token
+        emit error(this->tokens.back(), "In parseFactor(): Unexpected end of file");
+
         throw std::out_of_range("In parseFactor(): Unexpected end of file");
     }
 
@@ -452,6 +506,9 @@ Node *Parser::parseFactor()
         factorNode->setLevel(currentLevel);
         if(!tokenIterator.hasNext())
         {
+            // emit error with the last token
+            emit error(this->tokens.back(), "In parseFactor(): Unexpected end of file");
+
             throw std::out_of_range("In parseFactor(): Unexpected end of file, expecting CLOSEDBRACKET");
         }
         match(Token::TokenType::CLOSEDBRACKET);
@@ -469,6 +526,9 @@ Node *Parser::parseFactor()
         match(Token::TokenType::IDENTIFIER);
         break;
     default:
+        // emit error with the current token
+        emit error(tokenIterator.peekNext(), "In parseFactor(): Unexpected token");
+
         throw std::invalid_argument("In parseFactor(): Unexpected token: " +
                                     tokenIterator.peekNext().getValue().toStdString() +
                                     " of type " +

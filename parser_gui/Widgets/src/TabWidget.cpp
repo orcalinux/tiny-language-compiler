@@ -1,5 +1,9 @@
 #include "TabWidget.h"
 
+#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QLabel>
+
 namespace Tiny::Widgets {
 
 TabWidget::TabWidget(QWidget* parent)
@@ -30,7 +34,7 @@ void TabWidget::setToolBar(ToolBar *toolbar)
     connectCurrentTabSignals();
 }
 
-void TabWidget::addTabRequest(bool tokenOnly) {
+void TabWidget::addTabRequest(bool tokenOnly, bool newFile) {
     // check that the tab is not the default tab
     // get the tab at the current index
     QWidget* currentTab = widget(0);
@@ -45,7 +49,18 @@ void TabWidget::addTabRequest(bool tokenOnly) {
     }
 
     // create a new tab
-    TabContent* newTab = new TabContent(tokenOnly, true, this);
+    TabContent* newTab = nullptr;
+    try{
+        newTab = new TabContent(tokenOnly, newFile, this);
+    } catch (std::runtime_error& e) {
+        qDebug() << e.what();
+        // put the default tab
+        putDefaultTab();
+        return;
+    }
+
+
+    tokenOnly = newTab->getIsTokenOnly();
 
     // add the new tab
     addTab(newTab, (tokenOnly ? "Tokens" : "Text") + QString::number(counter));
@@ -55,24 +70,43 @@ void TabWidget::addTabRequest(bool tokenOnly) {
 
     counter++;
 
+    // change to the new tab
+    setCurrentWidget(newTab);
+
     connectCurrentTabSignals();
 
 }
 
 void TabWidget::newTextTab() {
-    addTabRequest(false);
+    addTabRequest(false, true);
 }
 
 void TabWidget::newTokensTab() {
-    addTabRequest(true);
+    addTabRequest(true,true);
 }
 
 void TabWidget::openTextTab() {
-    addTabRequest(false);
+    addTabRequest(false, false);
 }
 
 void TabWidget::openTokensTab() {
-    addTabRequest(true);
+    addTabRequest(true, false);
+}
+
+void TabWidget::saveCurrentTab()
+{
+    QWidget* currentTab = currentWidget();
+    if (currentTab == defaultTab) {
+        return;
+    }
+
+    TabContent* currentContentTab = qobject_cast<TabContent*>(currentTab);
+
+    if (currentContentTab == nullptr) {
+        return;
+    }
+
+    currentContentTab->saveFile();
 }
 
 void TabWidget::initStyle() {
@@ -275,6 +309,40 @@ void TabWidget::connectCurrentTabSignals()
 }
 
 void TabWidget::closeTab(int index) {
+    // check if the tab is saved
+    QWidget* tab = widget(index);
+    if (tab == defaultTab) {
+        return;
+    }
+
+    TabContent* contentTab = qobject_cast<TabContent*>(tab);
+    if (contentTab == nullptr) {
+        return;
+    }
+
+    // before delete check if the file is saved
+    if (!contentTab->getIsSaved()) {
+        // ask the user if he wants to save the file
+        QMessageBox msgBox;
+        msgBox.setText("The file is not saved");
+        msgBox.setInformativeText("Do you want to save the file?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+        case QMessageBox::Save:
+            if(!contentTab->saveFile()){
+                return;
+            }
+            break;
+        case QMessageBox::Discard:
+            break;
+        case QMessageBox::Cancel:
+            return;
+        }
+    }
+
     removeTab(index);
     if (count() == 0) {
         putDefaultTab();

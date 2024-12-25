@@ -10,6 +10,7 @@
 
 
 #include "Node.h"
+#include "Token.h"
 
 namespace Tiny::Widgets {
     using namespace Tiny::Data;
@@ -18,10 +19,20 @@ namespace Tiny::Widgets {
 
     protected:
         void paintEvent(QPaintEvent *event) override;
+        void resizeEvent(QResizeEvent *event) override {
+            Q_UNUSED(event);
+            errorLabel->setFixedSize(width(), height());
+            errorLabel->setGeometry(0, 0, width(), height());
+        }
        public:
         TreeVisualiser(QWidget *parent = nullptr);
            void drawTree(QPainter *painter, Node *root);
            void drawTree(QPainter *painter, Node *node, int x, int y, int availableWidth, int currentLevel);
+
+        void displayError(Tiny::Data::Token token, const QString& errorMessage, bool isUnexpectedToken);
+        void hideError() {
+            errorLabel->setVisible(false);
+        }
 
         int calculateTreeWidth(Node* node) {
             if (!node || node->getChildren().empty()) return 50;
@@ -35,6 +46,13 @@ namespace Tiny::Widgets {
 
         void setRoot(Node *root) {
             this->root = root;
+
+            if(root != nullptr){
+                // hide the error label
+                errorLabel->setVisible(false);
+            }
+            // update the widget
+            update();
         }
 
         void wheelEvent(QWheelEvent* event) override;
@@ -104,6 +122,8 @@ namespace Tiny::Widgets {
         Node *root = nullptr;
         qreal zoomFactor = 1.0;
         QMap<Node*, QPoint> positions;
+
+        QLabel *errorLabel;
 
     }; // class TreeVisualiser
 }  // namespace Tiny::Widgets

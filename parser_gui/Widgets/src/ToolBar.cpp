@@ -1,5 +1,11 @@
 #include "ToolBar.h"
 
+#include <QMessageBox>
+#include <QTableWidget>
+#include <QVBoxLayout>
+#include <QHeaderView>
+#include <QDialog>
+
 namespace Tiny::Widgets {
 
 ToolBar::ToolBar(QWidget* parent) {
@@ -76,8 +82,9 @@ void ToolBar::initFileActions() {
     openFileAction->name = ActionName::OpenFile;
     openFileAction->statusTip = "Open a file";
     openFileAction->shortcut = QKeySequence::Open;
-    openFileAction->slot = []() {
+    openFileAction->slot = [this]() {
         qDebug() << "Open file";
+        emit openFile();
     };
     addToolbarAction(openFileAction);
 
@@ -86,20 +93,11 @@ void ToolBar::initFileActions() {
     saveFileAction->name = ActionName::SaveFile;
     saveFileAction->statusTip = "Save the file";
     saveFileAction->shortcut = QKeySequence::Save;
-    saveFileAction->slot = []() {
+    saveFileAction->slot = [this]() {
         qDebug() << "Save file";
+        emit saveFile();
     };
     addToolbarAction(saveFileAction);
-
-    // save as file action
-    Action* saveAsFileAction = new Action();
-    saveAsFileAction->name = ActionName::SaveAsFile;
-    saveAsFileAction->statusTip = "Save the file as";
-    saveAsFileAction->shortcut = QKeySequence::SaveAs;
-    saveAsFileAction->slot = []() {
-        qDebug() << "Save as file";
-    };
-    addToolbarAction(saveAsFileAction);
 }
 
 void ToolBar::initViewActions() {
@@ -131,46 +129,67 @@ void ToolBar::initViewActions() {
     viewGroup->addAction(tokensAction);
 
     addSeparator();
-
-    // view parse tree
-    Action* viewParseTreeAction = new Action();
-    viewParseTreeAction->name = ActionName::ViewParseTree;
-    viewParseTreeAction->statusTip = "View the parse tree";
-    viewParseTreeAction->shortcut = QKeySequence("Ctrl+Shift+P");
-    viewParseTreeAction->slot = []() {
-        qDebug() << "View parse tree";
-    };
-    addToolbarAction(viewParseTreeAction, true, false);
-
-    // view syntax tree
-    Action* viewSyntaxTreeAction = new Action();
-    viewSyntaxTreeAction->name = ActionName::ViewSyntaxTree;
-    viewSyntaxTreeAction->statusTip = "View the syntax tree";
-    viewSyntaxTreeAction->shortcut = QKeySequence("Ctrl+Shift+O");
-    viewSyntaxTreeAction->slot = []() {
-        qDebug() << "View syntax tree";
-    };
-    addToolbarAction(viewSyntaxTreeAction, true, true);
 }
 
 void ToolBar::initHelpActions() {
-    // help action
-    Action* helpAction = new Action();
-    helpAction->name = ActionName::Help;
-    helpAction->statusTip = "Get help";
-    helpAction->shortcut = QKeySequence::HelpContents;
-    helpAction->slot = []() {
-        qDebug() << "Help";
-    };
-    addToolbarAction(helpAction);
-
     // about action
     Action* aboutAction = new Action();
     aboutAction->name = ActionName::About;
     aboutAction->statusTip = "About the application";
     aboutAction->shortcut = QKeySequence::WhatsThis;
-    aboutAction->slot = []() {
-        qDebug() << "About";
+    aboutAction->slot = [this]() {
+        // Create a dialog
+        QDialog *dialog = new QDialog(this);
+        dialog->setWindowTitle("Team Info");
+        dialog->resize(500, 300); // Adjust size as needed
+
+        // Create a table widget
+        QTableWidget *table = new QTableWidget(dialog);
+        table->setColumnCount(2);
+        table->setRowCount(6); // Number of team members
+        table->setHorizontalHeaderLabels(QStringList() << "Team Member" << "ID");
+        table->horizontalHeader()->setStretchLastSection(true);
+        table->setEditTriggers(QAbstractItemView::NoEditTriggers); // Make table read-only
+        table->setSelectionBehavior(QAbstractItemView::SelectRows);
+        table->setSelectionMode(QAbstractItemView::SingleSelection);
+
+        // Populate the table with team data
+        struct TeamMember {
+            QString name;
+            QString id;
+        };
+
+        QVector<TeamMember> members = {
+            {"Adham Khaled Abdelmaqsoud", "2000066"},
+            {"Ahmed Khaled Abdelmaksod Ebrahim", "2000218"},
+            {"Ahmed Mohammed Bakr Ahmed", "2000037"},
+            {"Eslam Mohamed Marzouk", "2000252"},
+            {"Karim Ibrahim Saad Abd-Elrazek", "2001118"},
+            {"Mahmoud Abdelraouf Mahmoud", "2001436"}
+        };
+
+        for(int row = 0; row < members.size(); ++row) {
+            QTableWidgetItem *nameItem = new QTableWidgetItem(members[row].name);
+            QTableWidgetItem *idItem = new QTableWidgetItem(members[row].id);
+            table->setItem(row, 0, nameItem);
+            table->setItem(row, 1, idItem);
+        }
+
+        // Adjust column widths
+        table->resizeColumnsToContents();
+        table->horizontalHeader()->setStretchLastSection(true);
+
+        // Layout setup
+        QVBoxLayout *layout = new QVBoxLayout(dialog);
+        layout->addWidget(table);
+        dialog->setLayout(layout);
+
+        // Show the dialog modally
+        dialog->exec();
+
+        // Clean up
+        delete dialog;
+
     };
     addToolbarAction(aboutAction);
 }

@@ -23,13 +23,15 @@ class TabWidget : public QTabWidget {
    signals:
 
    public slots:
-    void addTabRequest(bool tokenOnly = false);
+    void addTabRequest(bool tokenOnly = false, bool newFile = true);
 
     void newTextTab();
     void newTokensTab();
 
     void openTextTab();
     void openTokensTab();
+
+    void saveCurrentTab();
 
    private:
     QWidget* defaultTab;

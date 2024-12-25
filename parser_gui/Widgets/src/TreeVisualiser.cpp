@@ -23,6 +23,24 @@ void TreeVisualiser::paintEvent(QPaintEvent *event) {
 }
 
 TreeVisualiser::TreeVisualiser(QWidget *parent) : QWidget(parent) {
+    // init the error label
+    errorLabel = new QLabel(this);
+    errorLabel->setAlignment(Qt::AlignCenter);
+    errorLabel->setWordWrap(true);
+    errorLabel->setVisible(false); // Hidden by default
+
+    // Set font properties for better visibility
+    QFont font = errorLabel->font();
+    font.setPointSize(14);
+    font.setBold(true);
+    errorLabel->setFont(font);
+
+    // Set bright text color
+    errorLabel->setStyleSheet("QLabel { color : red; background-color: transparent; }");
+
+    // Adjust label size and position
+    errorLabel->setFixedSize(width(), height());
+    errorLabel->setGeometry(0, 0, width(), height());
 
 }
 
@@ -59,8 +77,14 @@ void TreeVisualiser::drawTree(QPainter* painter, Node *node)
         QPoint childPos = positions[child];
         if (child->getLevel() == node->getLevel()) {
             painter->drawLine(pos.x() + 40, pos.y(), childPos.x(), childPos.y());
+            painter->setBrush(QColor(255, 0, 0)); // Red
+            painter->drawEllipse(pos.x() + 40 - 3, pos.y()- 3, 6, 6);
+            painter->drawEllipse(childPos.x() - 45, childPos.y()-3, 6, 6);
         } else {
             painter->drawLine(pos.x(), pos.y() + 20, childPos.x(), childPos.y() - 20);
+            painter->setBrush(QColor(255, 0, 0)); // Red
+            painter->drawEllipse(pos.x()-3, pos.y() + 20-3, 6, 6);
+            painter->drawEllipse(childPos.x()-3, childPos.y()- 20-3, 6, 6);
         }
         drawTree(painter, child); // Recursively draw children
     }
@@ -97,9 +121,40 @@ void TreeVisualiser::drawTree(QPainter *painter, Node *node, int x, int y, int a
     for (Node* child : node->getChildren()) {
         QPoint childPos = positions[child];
         painter->drawLine(pos.x(), pos.y() + 20, childPos.x(), childPos.y() - 20);
+        painter->setBrush(QColor(255, 0, 0)); // Red
+        painter->drawEllipse(pos.x()-3, pos.y() + 20-3, 6, 6);
+        painter->drawEllipse(childPos.x()-3, childPos.y()- 20-3, 6, 6);
         drawTree(painter, child); // Recursively draw children
     }
 }
+
+void TreeVisualiser::displayError(Token token, const QString &errorMessage, bool isUnexpectedToken)
+{
+    // Construct the full error message
+    QString fullMessage;
+    if (isUnexpectedToken) {
+        fullMessage = QString("Scanner Error: Unexpected Tokens marked in red");
+    } else {
+        // get the token position, value and type
+        fullMessage = QString("Parser Error: Unexpected token %1 at line %2, column %3")
+                .arg(token.getValue())
+                .arg(token.getLine())
+                .arg(token.getColumn());
+        // append the error message
+        fullMessage.append("\n");
+        fullMessage.append(errorMessage);
+    }
+
+    // Set the message to the label
+    errorLabel->setText(fullMessage);
+    errorLabel->setStyleSheet("QLabel { color : yellow; background-color: rgba(0, 0, 0, 150); }");
+    errorLabel->setVisible(true);
+
+    // update the widget
+    update();
+}
+
+
 
 void TreeVisualiser::wheelEvent(QWheelEvent *event)
 {

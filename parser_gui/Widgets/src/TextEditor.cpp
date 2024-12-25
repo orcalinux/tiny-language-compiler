@@ -12,6 +12,12 @@ TextEditor::TextEditor(QWidget *parent) :
 
 void TextEditor::markUnknowTokens(int line, int column, int charCount)
 {
+    bool markWholeLine = false;
+    if (column == -1) {
+        column = 1;
+        markWholeLine = true;
+    }
+
     this->blockSignals(true);
 
     // Create a QTextCursor to navigate the document
@@ -25,13 +31,22 @@ void TextEditor::markUnknowTokens(int line, int column, int charCount)
     }
 
     // Calculate the position in the block (column is 1-based)
-    int position = block.position() + (column - 2);
+    if (column < 1) {
+        column = 1;
+    }
+    int position = block.position() + (column - 1);
 
     // Set the cursor to the starting position
     cursor.setPosition(position);
 
-    // Select the characters to mark by moving the cursor to the end of the selection range (left)
-    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, charCount);
+    // Select the whole line if requested from the start of the line to the end of the line
+    if (markWholeLine) {
+        cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    } else {
+        // Select the characters to mark by moving the cursor to the end of the selection range (left)
+        cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, charCount);
+    }
 
     // Create the format for marking
     QTextCharFormat format;
@@ -62,6 +77,9 @@ void TextEditor::markReservedToken(int line, int column, int charCount)
         return;
     }
 
+    if (column < 1) {
+        column = 1;
+    }
     // Calculate the position in the block (column is 1-based)
     int position = block.position() + (column - 1);
 
@@ -102,7 +120,7 @@ void TextEditor::resetFormat()
     this->blockSignals(false);
 }
 
-void TextEditor::markParseError(int line, int column, int charCount, QString message)
+void TextEditor::markParseError(int line, int column, int charCount, QString message, bool markWholeLine)
 {
     this->blockSignals(true);
 
@@ -116,14 +134,23 @@ void TextEditor::markParseError(int line, int column, int charCount, QString mes
         return;
     }
 
+    if (column < 1) {
+        column = 1;
+    }
     // Calculate the position in the block (column is 1-based)
     int position = block.position() + (column - 1);
 
     // Set the cursor to the starting position
     cursor.setPosition(position);
 
-    // Select the characters to mark by moving the cursor to the end of the selection range (left)
-    cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, charCount);
+    // Select the whole line if requested from the start of the line to the end of the line
+    if (markWholeLine) {
+        cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    } else {
+        // Select the characters to mark by moving the cursor to the end of the selection range (left)
+        cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, charCount);
+    }
 
     // Create the format for marking
     QTextCharFormat format;

@@ -38,14 +38,15 @@ public:
 
     bool getIsTokenOnly() const;
     bool getIsTokenShowed() const;
+    bool getIsSaved() const { return isSaved; }
     QList<QPair<Token,QString>> parseErrors;
+
+    bool saveFile();
 
 public slots:
     void showTokens();
     void showText();
 
-    void saveFile();
-    void saveAsFile();
 
     void textChanged();
 

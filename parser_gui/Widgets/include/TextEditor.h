@@ -16,10 +16,10 @@ namespace Tiny::Widgets {
        public:
         explicit TextEditor(QWidget* parent = nullptr);
 
-        void markUnknowTokens(int line, int column, int charCount);
-        void markReservedToken(int line, int column, int charCount);
+        void markUnknowTokens(int line, int column = -1, int charCount = 0);
+        void markReservedToken(int line, int column = -1, int charCount = 0);
         void resetFormat();
-        void markParseError(int line, int column, int charCount, QString message);
+        void markParseError(int line, int column, int charCount, QString message, bool markWholeLine = false);
        signals:
 
        public slots:

@@ -62,6 +62,9 @@ class ToolBar : public QToolBar {
     void newTextTab();
     void newTokensTab();
 
+    void openFile();
+    void saveFile();
+
     void showTokens();
     void showText();
 

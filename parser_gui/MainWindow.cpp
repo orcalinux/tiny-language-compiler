@@ -44,6 +44,9 @@ void MainWindow::initTabWidget() {
     connect(toolbar, &Tiny::Widgets::ToolBar::newTextTab, tabWidget, &Tiny::Widgets::TabWidget::newTextTab);
     connect(toolbar, &Tiny::Widgets::ToolBar::newTokensTab, tabWidget, &Tiny::Widgets::TabWidget::newTokensTab);
 
+    connect(toolbar, &Tiny::Widgets::ToolBar::openFile, tabWidget, &Tiny::Widgets::TabWidget::openTextTab);
+    connect(toolbar, &Tiny::Widgets::ToolBar::saveFile, tabWidget, &Tiny::Widgets::TabWidget::saveCurrentTab);
+
     // set the toolbar in the tab widget
     tabWidget->setToolBar(toolbar);
 }

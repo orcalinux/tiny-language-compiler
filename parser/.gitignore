@@ -1,0 +1,54 @@
+# Compiled Object files
+*.o
+*.obj
+
+# Precompiled Header files
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executable files
+scanner
+*.exe
+*.out
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# Temporary files and backups
+*.tmp
+*.swp
+*.bak
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# C++ cache files and directories
+*.cache
+.cache/
+*.ccache
+.ccache/
+
+# Visual Studio Code workspace settings
+.vscode/
+*.code-workspace
+
+# CLion and JetBrains IDE files
+.idea/
+cmake-build-*/
+
+# Ignore binary and debug folders
+bin/
+debug/
+release/

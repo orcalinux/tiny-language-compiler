@@ -1,4 +1,3 @@
-// include/Stack.hpp
 #ifndef STACK_HPP
 #define STACK_HPP
 

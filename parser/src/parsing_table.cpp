@@ -1,4 +1,3 @@
-// src/ParsingTable.cpp
 #include "parsing_table.hpp"
 #include <utility>
 

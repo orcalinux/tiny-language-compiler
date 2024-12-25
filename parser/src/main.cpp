@@ -1,4 +1,3 @@
-// main.cpp
 #include "parser.hpp"
 #include "token.hpp"
 #include <iostream>

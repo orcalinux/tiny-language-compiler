@@ -1,4 +1,3 @@
-// include/ParsingTable.hpp
 #ifndef PARSINGTABLE_HPP
 #define PARSINGTABLE_HPP
 

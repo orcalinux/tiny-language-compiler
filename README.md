@@ -159,7 +159,7 @@ The **Tiny Language Compiler** is a comprehensive project designed to demonstrat
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/tiny-language-compiler.git
+git clone https://github.com/orcalinux/tiny-language-compiler.git
 cd tiny-language-compiler
 ```
 

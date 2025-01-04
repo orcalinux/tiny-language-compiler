@@ -9,7 +9,7 @@
 - [Directory Structure](#directory-structure)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Documentation](#documentation)
+- [Documentation](#documentation)F
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
@@ -293,7 +293,7 @@ Contributions are welcome! To contribute to this project, follow these steps:
 2. **Clone Your Fork**
 
    ```bash
-   git clone https://github.com/yourusername/tiny-language-compiler.git
+   git clone https://github.com/orcalinux/tiny-language-compiler.git
    cd tiny-language-compiler
    ```
 

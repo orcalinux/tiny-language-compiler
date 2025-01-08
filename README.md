@@ -1,6 +1,6 @@
 # Tiny Language Compiler
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![CPP](https://img.shields.io/badge/language-CPP-brightgreen.svg) ![SDL2](https://img.shields.io/badge/SDL2-yes-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![CPP](https://img.shields.io/badge/language-CPP-brightgreen.svg) ![SDL2](https://img.shields.io/badge/Qt-yes-blue.svg)
 
 
 ## Table of Contents

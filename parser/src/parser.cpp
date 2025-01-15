@@ -100,7 +100,7 @@ bool Parser::parse()
             }
             else
             {
-                std::cerr << "Parse Error: Unexpected tokens after end of input." << std::endl;
+                // std::cerr << "Parse Error: Unexpected tokens after end of input." << std::endl;
                 return false;
             }
         }
@@ -141,8 +141,8 @@ bool Parser::parse()
             }
             else
             {
-                std::cerr << "Parse Error: Expected '" << tokenTypeToString(expectedType)
-                          << "' but found '" << tokenTypeToString(currentToken.type) << "'" << std::endl;
+                // std::cerr << "Parse Error: Expected '" << tokenTypeToString(expectedType)
+                //           << "' but found '" << tokenTypeToString(currentToken.type) << "'" << std::endl;
                 return false;
             }
         }
@@ -176,6 +176,6 @@ bool Parser::parse()
         return true;
     }
 
-    std::cerr << "Parse Error: Input not fully consumed." << std::endl;
+    // std::cerr << "Parse Error: Input not fully consumed." << std::endl;
     return false;
 }

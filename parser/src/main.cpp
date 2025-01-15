@@ -99,22 +99,69 @@ std::vector<Token> getTestTokens(int testCase)
     }
 }
 
+// Structure to hold test case information
+struct TestCase
+{
+    int id;
+    std::string description;
+};
+
+// Function to initialize all test cases with their descriptions
+std::vector<TestCase> initializeTestCases()
+{
+    return {
+        {1, "Simple Read and Write"},
+        {2, "If Statement Without Else"},
+        {3, "If Statement With Else"},
+        {4, "Repeat Loop"},
+        {5, "Missing 'end' in If Statement"},
+        {6, "Unexpected Token"},
+        {7, "Missing Semicolon"}};
+}
+
 int main()
 {
-    int testCase = 2; // Change this value to run different test cases
-    std::vector<Token> tokens = getTestTokens(testCase);
+    // Initialize all test cases
+    std::vector<TestCase> testCases = initializeTestCases();
 
-    Parser parser(tokens);
-    bool success = parser.parse();
+    // Counters for passed and failed tests
+    int passedTests = 0;
+    int failedTests = 0;
 
-    if (success)
+    std::cout << "Starting All Test Cases...\n"
+              << std::endl;
+
+    // Iterate through each test case in order
+    for (const auto &testCase : testCases)
     {
-        std::cout << "Parse Success" << std::endl;
+        // Get tokens for the current test case
+        std::vector<Token> tokens = getTestTokens(testCase.id);
+
+        // Initialize the parser with tokens
+        Parser parser(tokens);
+
+        // Parse the tokens
+        bool success = parser.parse();
+
+        // Display the result
+        std::cout << "Test Case " << testCase.id << ": " << testCase.description << " - ";
+        if (success)
+        {
+            std::cout << "Parse Success" << std::endl;
+            passedTests++;
+        }
+        else
+        {
+            std::cout << "Parse Failure" << std::endl;
+            failedTests++;
+        }
     }
-    else
-    {
-        std::cout << "Parse Failure" << std::endl;
-    }
+
+    // Summary of test results
+    std::cout << "\n--- Test Summary ---" << std::endl;
+    std::cout << "Total Tests Run: " << testCases.size() << std::endl;
+    std::cout << "Passed: " << passedTests << std::endl;
+    std::cout << "Failed: " << failedTests << std::endl;
 
     return 0;
 }

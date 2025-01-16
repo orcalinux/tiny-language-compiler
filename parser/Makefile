@@ -6,11 +6,13 @@ CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g -MMD -MP
 SRCDIR = src
 INCDIR = include
 OBJDIR = obj
+DEPDIR = dep
 BINDIR = bin
 
 # Source and Object Files
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+DEPS = $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SRCS))
 
 # Target Executable
 TARGET = $(BINDIR)/tiny-parser
@@ -23,7 +25,7 @@ all: directories $(TARGET)
 
 # Rule to Create Necessary Directories
 directories:
-	@mkdir -p $(OBJDIR) $(BINDIR)
+	@mkdir -p $(OBJDIR) $(DEPDIR) $(BINDIR)
 
 # Linking the Target Executable
 $(TARGET): $(OBJS)
@@ -31,10 +33,10 @@ $(TARGET): $(OBJS)
 
 # Compiling Source Files into Object Files
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MF $(DEPDIR)/$*.d
 
 # Include dependency files
--include $(OBJS:.o=.d)
+-include $(DEPS)
 
 # Run the Parser
 run: all
@@ -61,4 +63,4 @@ help:
 
 # Clean Target to Remove Build Artifacts
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJDIR) $(DEPDIR) $(BINDIR)

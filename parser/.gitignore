@@ -1,6 +1,7 @@
 # Compiled Object files
 *.o
 *.obj
+*.d
 
 # Precompiled Header files
 *.gch
@@ -50,5 +51,7 @@ cmake-build-*/
 
 # Ignore binary and debug folders
 bin/
+build/
+dep/
 debug/
 release/

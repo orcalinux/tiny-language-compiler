@@ -11,7 +11,7 @@ ParsingTable::ParsingTable()
     table[{"program", TokenType::WRITE}] = {"stmt-sequence"};
     table[{"program", TokenType::IDENTIFIER}] = {"stmt-sequence"};
 
-    // stmt-sequence → statement stmt-sequence'
+    // stmt-sequence  statement stmt-sequence'
     table[{"stmt-sequence", TokenType::IF}] = {"statement", "stmt-sequence'"};
     table[{"stmt-sequence", TokenType::REPEAT}] = {"statement", "stmt-sequence'"};
     table[{"stmt-sequence", TokenType::READ}] = {"statement", "stmt-sequence'"};

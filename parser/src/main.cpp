@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 // Enable ANSI escape codes on Windows
 #ifdef _WIN32
@@ -153,21 +154,33 @@ int main()
         // Initialize the parser with tokens
         Parser parser(tokens);
 
+        // Start the timer before parsing
+        auto start = std::chrono::high_resolution_clock::now();
+
         // Parse the tokens
         bool success = parser.parse();
 
-        // Display the result
+        // End the timer after parsing
+        auto end = std::chrono::high_resolution_clock::now();
+
+        // Calculate the duration in microseconds
+        std::chrono::duration<double, std::micro> duration = end - start;
+
+        // Display the result with execution time
         std::cout << "Test Case " << testCase.id << ": " << testCase.description << " - ";
         if (success)
         {
-            std::cout << "Parse Success" << std::endl;
+            std::cout << GREEN << "Parse Success" << RESET;
             passedTests++;
         }
         else
         {
-            std::cout << "Parse Failure" << std::endl;
+            std::cout << RED << "Parse Failure" << RESET;
             failedTests++;
         }
+
+        // Print the execution time in microseconds
+        std::cout << " | Time: " << YELLOW << duration.count() << " µs" << RESET << std::endl;
     }
 
     // Summary of test results

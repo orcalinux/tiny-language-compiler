@@ -3,7 +3,17 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <chrono>
+#include <iomanip> // For std::setw, std::left, etc.
+#include <chrono>  // For timing
+
+// Function to enable ANSI escape codes on Windows (Assuming it's defined elsewhere)
+#ifdef _WIN32
+void enableVirtualTerminal()
+{
+    // Implementation to enable ANSI escape codes on Windows
+    // This is a placeholder. Ensure you have the actual implementation.
+}
+#endif
 
 // Enable ANSI escape codes on Windows
 #ifdef _WIN32
@@ -133,6 +143,34 @@ std::vector<TestCase> initializeTestCases()
         {7, "Missing Semicolon"}};
 }
 
+// Helper function to print formatted test results
+void printTestResult(int id, const std::string &description, bool success, double time_us, size_t maxDescLen)
+{
+    // Define column widths
+    const int descriptionWidth = static_cast<int>(maxDescLen) + 2; // Adding padding
+
+    std::cout << "Test Case " << id << ": ";
+
+    // Description
+    std::cout << std::left << std::setw(descriptionWidth) << description << " - ";
+
+    // Parse Result with fixed width and coloring
+    if (success)
+    {
+        std::cout << GREEN << "Parse Success" << RESET;
+    }
+    else
+    {
+        std::cout << RED << "Parse Failure" << RESET;
+    }
+
+    // Add padding spaces to ensure alignment (assuming "Parse Success" and "Parse Failure" are 13 chars)
+    std::cout << "  "; // Two spaces
+
+    // Time
+    std::cout << "| Time: " << YELLOW << std::fixed << std::setprecision(3) << time_us << " µs" << RESET << std::endl;
+}
+
 int main()
 {
     // Initialize all test cases
@@ -144,6 +182,14 @@ int main()
 
     std::cout << "Starting All Test Cases...\n"
               << std::endl;
+
+    // Determine the maximum description length for alignment
+    size_t maxDescriptionLength = 0;
+    for (const auto &testCase : testCases)
+    {
+        if (testCase.description.length() > maxDescriptionLength)
+            maxDescriptionLength = testCase.description.length();
+    }
 
     // Iterate through each test case in order
     for (const auto &testCase : testCases)
@@ -166,21 +212,14 @@ int main()
         // Calculate the duration in microseconds
         std::chrono::duration<double, std::micro> duration = end - start;
 
-        // Display the result with execution time
-        std::cout << "Test Case " << testCase.id << ": " << testCase.description << " - ";
-        if (success)
-        {
-            std::cout << GREEN << "Parse Success" << RESET;
-            passedTests++;
-        }
-        else
-        {
-            std::cout << RED << "Parse Failure" << RESET;
-            failedTests++;
-        }
+        // Print the formatted test result
+        printTestResult(testCase.id, testCase.description, success, duration.count(), maxDescriptionLength);
 
-        // Print the execution time in microseconds
-        std::cout << " | Time: " << YELLOW << duration.count() << " µs" << RESET << std::endl;
+        // Update counters
+        if (success)
+            passedTests++;
+        else
+            failedTests++;
     }
 
     // Summary of test results
@@ -190,8 +229,8 @@ int main()
     std::cout << BOLD << CYAN << "========================================" << RESET << std::endl;
     // Test results
     std::cout << BOLD << "Total Tests Run  : " << RESET << testCases.size() << std::endl;
-    std::cout << BOLD << GREEN << "Passed           : " << RESET << passedTests << std::endl;
-    std::cout << BOLD << RED << "Failed           : " << RESET << failedTests << std::endl;
+    std::cout << BOLD << GREEN << "Passed           : " << passedTests << RESET << std::endl;
+    std::cout << BOLD << RED << "Failed           : " << failedTests << RESET << std::endl;
     // Footer
     std::cout << BOLD << CYAN << "========================================" << RESET << std::endl;
 
